@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VIQ Registration Comparison Dashboard</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171e2e; --panel2:#1e2740; --ink:#e8ecf5; --muted:#94a1bd;
+    --line:#2a3450; --accent:#5b8cff;
+    --y2024:#f4a259; --y2025:#5b8cff; --y2026:#38d39f;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef2fa; --ink:#1a2235; --muted:#5a6b8c;
+           --line:#d9e0ee; }
+  }
+  :root[data-theme="light"]{ --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef2fa; --ink:#1a2235;
+           --muted:#5a6b8c; --line:#d9e0ee; }
+  :root[data-theme="dark"]{ --bg:#0f1420; --panel:#171e2e; --panel2:#1e2740; --ink:#e8ecf5;
+           --muted:#94a1bd; --line:#2a3450; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 60px;}
+  h1{font-size:22px;margin:0 0 2px;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;
+            background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:18px;}
+  .ctl label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px;}
+  select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+         padding:8px 10px;font-size:14px;min-width:210px;}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .seg button{background:var(--panel2);color:var(--muted);border:0;padding:8px 12px;font-size:13px;cursor:pointer;}
+  .seg button.on{background:var(--accent);color:#fff;}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .kpi .yr{font-size:12px;color:var(--muted);}
+  .kpi .val{font-size:26px;font-weight:700;margin-top:4px;line-height:1.15;}
+  .kpi.k2024 .val{color:var(--y2024)} .kpi.k2025 .val{color:var(--y2025)} .kpi.k2026 .val{color:var(--y2026)}
+  .kpi .delta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .kpi .valrow{display:flex;gap:20px;flex-wrap:wrap;margin-top:4px;}
+  .kpi .valcol{display:flex;flex-direction:column;}
+  .kpi .valcol .val{margin-top:1px;}
+  .kpi .sublbl{font-size:11px;color:var(--muted);}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px;}
+  .card h2{font-size:15px;margin:0 0 4px;}
+  .card .hint{font-size:12px;color:var(--muted);margin-bottom:10px;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:1fr}}
+  table{border-collapse:collapse;width:100%;font-size:13px;}
+  th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:right;}
+  th:first-child,td:first-child{text-align:left;}
+  th{color:var(--muted);font-weight:600;font-size:12px;}
+  .svgwrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  /* explicit width/height attrs + height:auto -> correct aspect ratio on iOS Safari */
+  svg{display:block;width:100%;height:auto;max-width:100%;}
+  .foot{color:var(--muted);font-size:11px;margin-top:24px;text-align:center;}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 10px;margin-left:6px;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tabbtn{background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:10px;
+          padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;}
+  .tabbtn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  #errbar{display:none;background:#7a1f1f;color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;
+          font-family:monospace;white-space:pre-wrap;word-break:break-word;}
+  .fulltot{font-size:12px;color:var(--muted);margin:-6px 0 18px;}
+  .tablewrap{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;}
+  .tablewrap table{font-size:12px;}
+  .tablewrap thead th{position:-webkit-sticky;position:sticky;top:0;background:var(--panel);z-index:1;}
+  .tablewrap tfoot th{position:-webkit-sticky;position:sticky;bottom:0;background:var(--panel);}
+  #dayChart rect[onmousemove],svg rect[onmousemove]{cursor:crosshair;}
+  #tip{position:fixed;z-index:60;pointer-events:none;background:var(--panel);border:1px solid var(--line);
+       border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.28);min-width:150px;}
+  #tip .th{font-weight:700;margin-bottom:5px;}
+  #tip .tr{display:flex;align-items:center;gap:6px;margin:2px 0;white-space:nowrap;}
+  #tip .tr b{margin-left:auto;padding-left:14px;}
+  #tip .sw{width:10px;height:10px;border-radius:2px;display:inline-block;flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>VIQ Registration Comparison Dashboard</h1>
+  <div class="sub">2024 vs 2025 vs 2026 &nbsp;|&nbsp; Measure: 2024/2025 = sum of Reg Count, 2026 = row count
+     <span class="tag" id="genTag"></span></div>
+
+  <div class="controls">
+    <div class="ctl"><label>Region</label>
+      <select id="regionSel"></select></div>
+    <div class="ctl"><label>RBH</label>
+      <select id="rbhSel"></select></div>
+    <div class="ctl"><label>Study Center</label>
+      <select id="centerSel"></select></div>
+    <div class="ctl"><label>Day-wise measure</label>
+      <div class="seg" id="modeSeg">
+        <button data-m="daily" class="on">Daily</button>
+        <button data-m="cum">Cumulative</button>
+      </div></div>
+    <div class="ctl"><label>Day-wise display</label>
+      <div class="seg" id="viewSeg">
+        <button data-v="chart" class="on">Chart</button>
+        <button data-v="table">Table</button>
+      </div></div>
+  </div>
+
+  <div id="errbar"></div>
+
+  <div class="tabs">
+    <button id="tabBtnCmp" class="tabbtn on" onclick="switchTab('cmp')">Comparison</button>
+    <button id="tabBtnUni" class="tabbtn" onclick="switchTab('uni')">Unique (by Mobile)</button>
+  </div>
+
+  <div id="tabComparison">
+  <div class="kpis" id="kpis"></div>
+
+  <div class="card">
+    <h2>Day-wise Registration (Day 1 = earliest registration date of each year)</h2>
+    <div class="hint" id="dayHint"></div>
+    <div class="svgwrap" id="dayChartWrap"><svg id="dayChart" width="1120" height="380" viewBox="0 0 1120 380" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="tablewrap" id="dayTableWrap" style="display:none"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--y2024)"></i>2024</span>
+      <span><i class="dot" style="background:var(--y2025)"></i>2025</span>
+      <span><i class="dot" style="background:var(--y2026)"></i>2026</span>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Registration Through</h2>
+      <div class="hint">Registration source category by year</div>
+      <div class="svgwrap"><svg id="rtChart" width="540" height="340" viewBox="0 0 540 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <table id="rtTable"></table>
+    </div>
+    <div class="card">
+      <h2>Payment Mode</h2>
+      <div class="hint">Free vs Paid by year</div>
+      <div class="svgwrap"><svg id="pmChart" width="540" height="340" viewBox="0 0 540 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <table id="pmTable"></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>2024 vs 2025 &mdash; Reg / Attendance / Selection / Admission (sum)</h2>
+    <div class="hint">Four-metric totals for the selected scope. 2026 has no count columns, so it is excluded here.</div>
+    <div class="svgwrap"><svg id="sumChart" width="720" height="320" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <table id="sumTable"></table>
+  </div>
+  </div><!-- /tabComparison -->
+
+  <div id="tabUnique" style="display:none">
+    <div class="hint" id="uniHint" style="margin-bottom:14px"></div>
+    <div class="kpis" id="uniKpis"></div>
+    <div class="card">
+      <h2>Unique Students by Mobile &mdash; Region breakdown</h2>
+      <div class="hint">Distinct phone numbers per region. 2024/2025 count phones with Reg&nbsp;Count&nbsp;&ge;&nbsp;1; 2026 counts all phones. (Region breakdown ignores the Center filter.)</div>
+      <div class="svgwrap"><svg id="uniChart" width="720" height="340" viewBox="0 0 720 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <table id="uniTable"></table>
+    </div>
+  </div>
+
+  <div class="foot">Generated by build_report.py &middot; VIQ Reg Report</div>
+</div>
+
+<script>
+function showErr(t){var e=document.getElementById('errbar'); if(e){e.style.display='block'; e.textContent='⚠ '+t;}}
+window.onerror=function(msg,src,ln,col,err){showErr(msg+(ln?(' :'+ln):'')+(err&&err.stack?('\n'+err.stack):'')); return false;};
+const MODEL = {"years":["2024","2025","2026"],"regions":["01_Delhi Ncr","03_Franchise"],"centers":["Ghaziabad","Ghaziabad (Raj Nagar Extention)"],"regionOfCenter":{"Ghaziabad":1,"Ghaziabad (Raj Nagar Extention)":0},"rbhs":["Aditya Goswami"],"rbhOfCenter":[0,0],"day1":{"2024":"2024-07-18","2025":"2025-07-16","2026":"2026-07-14"},"maxDay":103,"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,1,0,52,2.0],[0,1,0,73,3.0],[0,1,0,32,19.0],[0,1,0,76,2.0],[0,1,0,33,5.0],[0,1,0,85,3.0],[0,1,0,26,383.0],[0,1,0,3,2.0],[0,1,0,53,5.0],[0,1,0,55,4.0],[0,1,0,87,6.0],[0,1,0,5,4.0],[0,1,0,70,2.0],[0,1,0,31,15.0],[0,1,0,80,5.0],[0,1,0,88,3.0],[0,1,0,46,6.0],[0,1,0,27,1.0],[0,1,0,74,3.0],[0,1,0,90,4.0],[0,1,0,57,7.0],[0,1,0,82,2.0],[0,1,0,4,4.0],[0,1,0,25,1.0],[0,1,0,72,2.0],[0,1,0,77,5.0],[0,1,0,45,2.0],[0,1,0,92,2.0],[0,1,0,40,3.0],[0,1,0,78,4.0],[0,1,0,84,1.0],[0,1,0,7,10.0],[0,1,0,8,11.0],[0,1,0,10,12.0],[0,1,0,11,13.0],[0,1,0,12,11.0],[0,1,0,14,86.0],[0,1,0,29,6.0],[0,1,0,30,9.0],[0,1,0,41,171.0],[0,1,0,43,9.0],[0,1,0,59,3.0],[0,1,0,79,23.0],[0,1,0,13,19.0],[0,1,0,15,19.0],[0,1,0,1,11.0],[0,1,0,2,1.0],[0,1,0,9,3.0],[0,1,0,17,1.0],[0,1,0,24,4.0],[0,1,0,28,1.0],[0,1,0,37,2.0],[0,1,0,44,2.0],[0,1,0,47,3.0],[0,1,0,48,1.0],[0,1,0,49,2.0],[0,1,0,54,14.0],[0,1,0,58,4.0],[0,1,0,61,2.0],[0,1,0,62,2.0],[0,1,0,63,1.0],[0,1,0,64,2.0],[0,1,0,60,2.0],[0,1,0,68,2.0],[0,1,0,69,3.0],[0,1,0,71,1.0],[0,1,0,81,6.0],[0,1,0,86,1.0],[0,1,0,89,1.0],[0,1,0,91,1.0],[0,1,0,93,4.0],[0,1,0,94,4.0],[0,1,0,19,1.0],[0,1,0,75,3.0],[0,1,0,51,4.0],[0,1,0,50,1.0],[0,1,0,56,2.0],[0,1,0,66,1.0],[0,1,0,67,4.0],[0,1,0,65,1.0],[0,1,0,38,2.0],[1,0,0,38,1365.0],[1,0,0,53,9.0],[1,0,0,59,41.0],[1,0,0,60,8.0],[1,0,0,31,19.0],[1,0,0,29,16.0],[1,0,0,13,3.0],[1,0,0,23,20.0],[1,0,0,28,10.0],[1,0,0,43,2.0],[1,0,0,68,1.0],[1,0,0,77,3.0],[1,0,0,48,2.0],[1,0,0,19,4.0],[1,0,0,81,3.0],[1,0,0,82,5.0],[1,0,0,49,1.0],[1,0,0,74,4.0],[1,0,0,26,9.0],[1,0,0,39,1.0],[1,0,0,47,2.0],[1,0,0,27,13.0],[1,0,0,22,13.0],[1,0,0,3,1.0],[1,0,0,70,1.0],[1,0,0,50,2.0],[1,0,0,101,2.0],[1,0,0,102,1.0],[1,0,0,51,1.0],[1,0,0,66,3.0],[1,0,0,80,1.0],[1,0,0,84,1.0],[1,0,0,65,2.0],[1,0,0,89,1.0],[1,0,0,99,2.0],[1,0,0,41,44.0],[1,0,0,44,1.0],[1,0,0,88,5.0],[1,0,0,21,7.0],[1,0,0,86,1.0],[1,0,0,92,1.0],[1,0,0,100,1.0],[1,0,0,8,1.0],[1,0,0,30,21.0],[1,0,0,17,2.0],[1,0,0,56,1.0],[1,0,0,16,3.0],[1,0,0,12,2.0],[1,0,0,46,1.0],[1,0,0,18,5.0],[1,0,0,20,3.0],[1,0,0,52,2.0],[1,0,0,87,1.0],[1,0,0,1,2.0],[1,0,0,6,1.0],[1,0,0,25,9.0],[1,0,0,63,3.0],[1,0,0,93,1.0],[1,0,0,15,1.0],[1,0,0,24,9.0],[1,0,0,32,2.0],[1,0,0,61,1.0],[1,0,0,62,1.0],[1,0,0,85,1.0],[1,0,0,35,2.0],[1,0,0,71,3.0],[1,0,0,40,1.0],[1,0,0,78,1.0],[1,0,0,45,1.0],[1,0,0,64,1.0],[1,0,0,72,1.0],[1,0,0,36,1.0],[1,0,1,38,96.0],[1,0,1,41,6.0],[1,0,1,59,6.0],[1,0,1,53,1.0],[1,0,1,89,6.0],[1,0,1,82,2.0],[1,0,1,88,4.0],[1,0,1,86,1.0],[1,0,1,11,2.0],[1,0,1,30,6.0],[1,0,1,26,6.0],[1,0,1,47,2.0],[1,0,1,60,2.0],[1,0,1,28,8.0],[1,0,1,34,1.0],[1,0,1,43,1.0],[1,0,1,61,4.0],[1,0,1,29,7.0],[1,0,1,93,1.0],[1,0,1,71,1.0],[1,0,1,6,3.0],[1,0,1,20,2.0],[1,0,1,80,1.0],[1,0,1,19,4.0],[1,0,1,78,1.0],[1,0,1,62,1.0],[1,0,1,40,3.0],[1,0,1,23,7.0],[1,0,1,72,2.0],[1,0,1,14,2.0],[1,0,1,12,3.0],[1,0,1,57,1.0],[1,0,1,22,7.0],[1,0,1,90,1.0],[1,0,1,9,1.0],[1,0,1,45,1.0],[1,0,1,31,3.0],[1,0,1,76,1.0],[1,0,1,27,1.0],[1,0,1,39,2.0],[1,0,1,25,2.0],[1,0,1,42,1.0],[1,0,1,24,2.0],[1,0,1,21,4.0],[1,0,1,13,3.0],[1,0,1,15,1.0],[1,0,1,17,3.0],[1,0,1,18,2.0],[1,0,1,16,1.0],[1,0,1,36,3.0],[1,0,1,103,1.0],[1,0,1,49,1.0],[1,0,1,97,1.0],[1,0,1,95,1.0],[1,0,1,7,2.0],[1,0,1,48,1.0],[2,0,0,1,1.0],[2,0,0,2,3.0],[2,0,0,3,2.0],[2,0,0,4,2.0],[2,0,0,5,6.0],[2,0,0,6,3.0],[2,0,0,7,2.0],[2,0,0,8,1.0],[2,0,0,9,7.0],[2,0,0,10,5.0],[2,0,0,11,2.0],[2,0,0,12,1.0],[2,0,0,13,12.0],[2,0,0,14,5.0],[2,0,0,15,20.0],[2,0,0,16,12.0],[2,0,0,17,2.0],[2,0,1,1,2.0],[2,0,1,3,1.0],[2,0,1,5,5.0],[2,0,1,6,4.0],[2,0,1,9,1.0],[2,0,1,13,8.0],[2,0,1,14,1.0],[2,0,1,15,9.0],[2,0,1,16,4.0],[2,0,1,17,2.0]],"pmRows":[[0,1,0,1,168.0],[0,1,0,0,844.0],[1,0,0,0,1642.0],[1,0,0,1,74.0],[1,0,1,0,195.0],[1,0,1,1,44.0],[2,0,0,0,86.0],[2,0,1,0,37.0]],"rtRows":[[0,1,0,0,396.0],[0,1,0,2,602.0],[0,1,0,1,14.0],[1,0,0,2,62.0],[1,0,0,0,662.0],[1,0,0,3,4.0],[1,0,0,1,988.0],[1,0,1,2,19.0],[1,0,1,0,146.0],[1,0,1,3,1.0],[1,0,1,1,73.0],[2,0,0,0,81.0],[2,0,0,3,5.0],[2,0,1,3,4.0],[2,0,1,0,33.0]],"metRows":[[0,1,0,1012.0,360.0,288.0,34.0],[1,0,0,1716.0,181.0,138.0,40.0],[1,0,1,239.0,84.0,80.0,21.0],[2,0,0,0.0,0.0,0.0,0.0],[2,0,1,0.0,0.0,0.0,0.0]],"uniCenter":[[0,1,0,1008],[1,0,0,1674],[1,0,1,229],[2,0,0,86],[2,0,1,37]],"uniRegion":[[0,1,1008],[1,0,1896],[2,0,123]],"uniYear":[1008,1896,123]};
+const GEN = "2026-07-30 18:54";
+function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
+const YVAR={0:'--y2024',1:'--y2025',2:'--y2026'};
+function yc(i){return getVar(YVAR[i]);}
+// Indian grouping without toLocaleString (some iOS Safari builds mishandle the locale arg)
+function fmt(n){ n=Math.round(+n||0); var neg=n<0; n=Math.abs(n); var s=''+n;
+  if(s.length>3){ var l3=s.slice(-3), head=s.slice(0,-3);
+    head=head.replace(/\B(?=(\d\d)+$)/g,','); s=head+','+l3; }
+  return (neg?'-':'')+s; }
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// numeric Date constructor (no string parsing) — reliable on every engine incl. iOS
+function ddate(iso,add){ if(!iso) return ''; var p=(''+iso).split('-');
+  var d=new Date(+p[0], (+p[1])-1, +p[2]); d.setDate(d.getDate()+(add||0));
+  var day=d.getDate(); return (day<10?'0':'')+day+' '+MON[d.getMonth()]; }
+
+let region = -1, center = -1, rbh = -1, mode = 'daily', dayView = 'chart';
+
+// ---- floating tooltip (Power BI style)
+const tip=document.createElement('div'); tip.id='tip'; tip.style.display='none'; document.body.appendChild(tip);
+function showTip(html,x,y){ tip.innerHTML=html; tip.style.display='block';
+  const r=tip.getBoundingClientRect(); let tx=x+16, ty=y+16;
+  if(tx+r.width>window.innerWidth-8) tx=x-r.width-16;
+  if(ty+r.height>window.innerHeight-8) ty=y-r.height-16;
+  tip.style.left=Math.max(6,tx)+'px'; tip.style.top=Math.max(6,ty)+'px'; }
+function hideTip(){ tip.style.display='none'; }
+
+document.getElementById('genTag').textContent = 'generated ' + GEN;
+
+// ---- populate selectors
+const regionSel = document.getElementById('regionSel');
+const centerSel = document.getElementById('centerSel');
+const rbhSel = document.getElementById('rbhSel');
+function fillRegion(){
+  regionSel.innerHTML = '<option value="-1">All Regions</option>' +
+    MODEL.regions.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
+}
+function fillRbh(){
+  rbhSel.innerHTML = '<option value="-1">All RBH</option>' +
+    MODEL.rbhs.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
+}
+function fillCenter(){
+  let opts = '<option value="-1">All Centers</option>';
+  MODEL.centers.forEach((c,i)=>{
+    if((region===-1 || MODEL.regionOfCenter[c]===region) &&
+       (rbh===-1 || MODEL.rbhOfCenter[i]===rbh))
+      opts += `<option value="${i}">${c}</option>`;
+  });
+  centerSel.innerHTML = opts;
+  center = -1;
+}
+fillRegion(); fillRbh(); fillCenter();
+regionSel.onchange = e => { region = +e.target.value; fillCenter(); render(); };
+rbhSel.onchange = e => { rbh = +e.target.value; fillCenter(); render(); };
+centerSel.onchange = e => { center = +e.target.value; render(); };
+document.querySelectorAll('#modeSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#modeSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); mode=b.dataset.m; render();};
+});
+document.querySelectorAll('#viewSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#viewSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); dayView=b.dataset.v;
+    document.getElementById('dayChartWrap').style.display = dayView==='chart'?'block':'none';
+    document.getElementById('dayTableWrap').style.display = dayView==='table'?'block':'none';
+    render();};
+});
+function switchTab(t){ var cmp=(t==='cmp');
+  document.getElementById('tabComparison').style.display = cmp?'block':'none';
+  document.getElementById('tabUnique').style.display = cmp?'none':'block';
+  document.getElementById('tabBtnCmp').classList.toggle('on',cmp);
+  document.getElementById('tabBtnUni').classList.toggle('on',!cmp);
+}
+
+// ---- filtering helpers
+function match(r,c){ return (region===-1||r===region) && (center===-1||c===center) && (rbh===-1||MODEL.rbhOfCenter[c]===rbh); }
+
+// ---- aggregate current scope
+function dayData(){
+  const per = [ {}, {}, {} ];        // year -> {day:val}
+  for(const [y,r,c,d,v] of MODEL.dayRows){ if(match(r,c)) per[y][d]=(per[y][d]||0)+v; }
+  return per;
+}
+function catData(rows, ncats){
+  const per = [ Array(ncats).fill(0), Array(ncats).fill(0), Array(ncats).fill(0) ];
+  for(const [y,r,c,k,v] of rows){ if(match(r,c)) per[y][k]+=v; }
+  return per;
+}
+function metData(){
+  const per = [ [0,0,0,0],[0,0,0,0],[0,0,0,0] ];
+  for(const [y,r,c,reg,att,sel,adm] of MODEL.metRows){
+    if(match(r,c)){ per[y][0]+=reg; per[y][1]+=att; per[y][2]+=sel; per[y][3]+=adm; }
+  }
+  return per;
+}
+function cumArrays(dd,maxDay){ const cum=[[],[],[]];
+  for(let y=0;y<3;y++){ let s=0; for(let d=1;d<=maxDay;d++){ s+=(dd[y][d]||0); cum[y][d]=s; } } return cum; }
+function currentDay2026(){ let cur=0;
+  for(const [y,r,c,d,v] of MODEL.dayRows){ if(y===2 && match(r,c) && d>cur) cur=d; }
+  return cur || MODEL.maxDay; }
+
+// ---- tiny SVG chart lib -------------------------------------------------
+let DG=null;   // day-chart geometry for hover
+function lineChart(svg, dd, maxDay, curDay){
+  const W=1120,H=380,ml=64,mr=18,mt=18,mb=42, pw=W-ml-mr, ph=H-mt-mb;
+  const cum=cumArrays(dd,maxDay);
+  const val=(y,d)=> mode==='cum' ? cum[y][d] : (dd[y][d]||0);
+  let max=0;
+  for(let y=0;y<3;y++) for(let d=1;d<=maxDay;d++){ const v=val(y,d); if(v>max) max=v; }
+  max = niceMax(max);
+  const X = d => ml + (maxDay<=1?0:(d-1)/(maxDay-1))*pw;
+  const Y = v => mt + ph - (max?v/max:0)*ph;
+  let g = `<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`;
+  for(let i=0;i<=5;i++){ const vv=max*i/5, yy=Y(vv);
+    g+=`<line x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}" stroke="${getVar('--line')}" stroke-width="1"/>`;
+    g+=`<text x="${ml-8}" y="${yy+4}" fill="${getVar('--muted')}" font-size="11" text-anchor="end">${fmt(vv)}</text>`;
+  }
+  const step = Math.max(1, Math.ceil(maxDay/12));
+  for(let d=1; d<=maxDay; d+=step)
+    g+=`<text x="${X(d)}" y="${H-mb+18}" fill="${getVar('--muted')}" font-size="11" text-anchor="middle">${d}</text>`;
+  g+=`<text x="${ml+pw/2}" y="${H-6}" fill="${getVar('--muted')}" font-size="11" text-anchor="middle">Day index (Day 1 = first registration date)</text>`;
+  // "today" marker at 2026's current day
+  if(curDay>=1 && curDay<=maxDay){ const mx=X(curDay);
+    g+=`<line x1="${mx}" y1="${mt}" x2="${mx}" y2="${mt+ph}" stroke="${yc(2)}" stroke-width="1" stroke-dasharray="4 3" opacity="0.75"/>`;
+    g+=`<text x="${mx}" y="${mt-3}" fill="${yc(2)}" font-size="10" text-anchor="middle">Day ${curDay}</text>`;
+  }
+  // lines
+  for(let y=0;y<3;y++){ let pts=[];
+    for(let d=1; d<=maxDay; d++){ if(mode==='daily' && !(d in dd[y])) continue; pts.push([X(d), Y(val(y,d))]); }
+    if(!pts.length) continue;
+    g+=`<path d="${pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${yc(y)}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  }
+  g+=`<g class="hoverlayer"></g>`;
+  g+=`<rect x="${ml}" y="${mt}" width="${pw}" height="${ph}" fill="transparent" onmousemove="dayTip(event)" onmouseleave="dayLeave()" ontouchstart="dayTouch(event)" ontouchmove="dayTouch(event)" ontouchend="dayLeave()"/>`;
+  svg.innerHTML=g;
+  DG={svg,W,ml,pw,mt,ph,maxDay,X,Y,val,dd};
+}
+function dayTouch(e){ if(e.touches && e.touches[0]){ e.preventDefault(); dayTip(e.touches[0]); } }
+function dayTip(evt){ if(!DG) return; const rect=DG.svg.getBoundingClientRect();
+  const sx=DG.W/rect.width, vx=(evt.clientX-rect.left)*sx;
+  let d=Math.round(1+(vx-DG.ml)/DG.pw*(DG.maxDay-1)); d=Math.max(1,Math.min(DG.maxDay,d));
+  let hg=`<line x1="${DG.X(d)}" y1="${DG.mt}" x2="${DG.X(d)}" y2="${DG.mt+DG.ph}" stroke="${getVar('--muted')}" stroke-width="1"/>`;
+  let rows='';
+  for(let y=0;y<3;y++){ if(mode==='daily' && !(d in DG.dd[y])) continue;
+    const v=DG.val(y,d);
+    hg+=`<circle cx="${DG.X(d)}" cy="${DG.Y(v)}" r="4" fill="${yc(y)}" stroke="#fff" stroke-width="1"/>`;
+    rows+=`<div class="tr"><span class="sw" style="background:${yc(y)}"></span>${MODEL.years[y]} · ${ddate(MODEL.day1[MODEL.years[y]],d-1)}<b>${fmt(v)}</b></div>`;
+  }
+  DG.svg.querySelector('.hoverlayer').innerHTML=hg;
+  showTip(`<div class="th">Day ${d} · ${mode==='cum'?'cumulative':'daily'}</div>${rows||'<div class="tr">no data</div>'}`, evt.clientX, evt.clientY);
+}
+function dayLeave(){ if(DG){ const h=DG.svg.querySelector('.hoverlayer'); if(h) h.innerHTML=''; } hideTip(); }
+function groupedBars(svg, cats, seriesByYear, W, H){
+  W=W||540; H=H||340;
+  const ml=52,mr=10,mt=14,mb=70, pw=W-ml-mr, ph=H-mt-mb;
+  let max=0; seriesByYear.forEach(a=>a.forEach(v=>{if(v>max)max=v;})); max=niceMax(max);
+  const y=v=>mt+ph-(max?v/max:0)*ph;
+  let g='';
+  for(let i=0;i<=4;i++){ const val=max*i/4, yy=y(val);
+    g+=`<line x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}" stroke="${getVar('--line')}"/>`;
+    g+=`<text x="${ml-6}" y="${yy+4}" fill="${getVar('--muted')}" font-size="10" text-anchor="end">${fmt(val)}</text>`;}
+  const gw=pw/cats.length, bw=Math.min(22,(gw-10)/3);
+  cats.forEach((cat,ci)=>{
+    const gx=ml+ci*gw+ (gw-bw*3)/2;
+    const cc=String(cat).replace(/'/g,"’").replace(/</g,"");
+    for(let yr=0;yr<3;yr++){ const v=seriesByYear[yr][ci]||0; const bx=gx+yr*bw; const by=y(v);
+      g+=`<rect x="${bx}" y="${by}" width="${bw-2}" height="${mt+ph-by}" fill="${yc(yr)}" rx="2" onmousemove="barTip(event,'${cc}',${yr},${v})" onmouseleave="hideTip()" ontouchstart="barTouch(event,'${cc}',${yr},${v})" ontouchend="hideTip()"/>`;}
+    g+=`<text x="${ml+ci*gw+gw/2}" y="${H-mb+16}" fill="${getVar('--muted')}" font-size="11" text-anchor="middle">${cat}</text>`;
+  });
+  svg.innerHTML=g;
+}
+function barTip(evt,cat,yr,v){
+  showTip(`<div class="th">${cat}</div><div class="tr"><span class="sw" style="background:${yc(yr)}"></span>${MODEL.years[yr]}<b>${fmt(v)}</b></div>`, evt.clientX, evt.clientY);
+}
+function barTouch(e,cat,yr,v){ if(e.touches && e.touches[0]){ e.preventDefault(); barTip(e.touches[0],cat,yr,v); } }
+function renderDayTable(dd,maxDay){
+  const cum=cumArrays(dd,maxDay);
+  const val=(y,d)=> mode==='cum' ? cum[y][d] : (dd[y][d]||0);
+  let h=`<table><thead><tr><th>Day</th><th>2026 date</th><th>2024</th><th>2025</th><th>2026</th></tr></thead><tbody>`;
+  for(let d=1; d<=maxDay; d++){
+    h+=`<tr><td>${d}</td><td>${ddate(MODEL.day1['2026'],d-1)}</td><td>${fmt(val(0,d))}</td><td>${fmt(val(1,d))}</td><td>${fmt(val(2,d))}</td></tr>`;
+  }
+  const tot=[0,1,2].map(y=> mode==='cum' ? cum[y][maxDay] : Object.values(dd[y]).reduce((a,b)=>a+b,0));
+  h+=`</tbody><tfoot><tr><th>Total</th><th></th><th>${fmt(tot[0])}</th><th>${fmt(tot[1])}</th><th>${fmt(tot[2])}</th></tr></tfoot></table>`;
+  document.getElementById('dayTableWrap').innerHTML=h;
+}
+function niceMax(m){ if(m<=0)return 1; const p=Math.pow(10,Math.floor(Math.log10(m))); const n=m/p;
+  const f = n<=1?1:n<=2?2:n<=5?5:10; return f*p; }
+
+function catTable(el, cats, per){
+  let h='<tr><th>Category</th><th>2024</th><th>2025</th><th>2026</th></tr>';
+  cats.forEach((c,i)=>{ h+=`<tr><td>${c}</td><td>${fmt(per[0][i]||0)}</td><td>${fmt(per[1][i]||0)}</td><td>${fmt(per[2][i]||0)}</td></tr>`; });
+  const t=[0,1,2].map(y=>per[y].reduce((a,b)=>a+b,0));
+  h+=`<tr><th>Total</th><th>${fmt(t[0])}</th><th>${fmt(t[1])}</th><th>${fmt(t[2])}</th></tr>`;
+  el.innerHTML=h;
+}
+
+// ---- render everything --------------------------------------------------
+function render(){
+  const dd = dayData();
+  const cur = currentDay2026();
+  const cum = cumArrays(dd, MODEL.maxDay);
+  const pace = [cum[0][cur], cum[1][cur], cum[2][cur]];   // same-day cumulative per year
+  const names = MODEL.years;
+  const full=[0,1,2].map(y=>Object.values(dd[y]).reduce((a,b)=>a+b,0));   // full-period totals
+  // ---- KPI tiles = same-day pace; 2024/2025 also show full-period total, 2026 shows growth
+  document.getElementById('kpis').innerHTML = names.map((n,i)=>{
+    if(i===2){
+      const p25 = pace[1]>0 ? (pace[2]-pace[1])/pace[1]*100 : null;
+      const p24 = pace[0]>0 ? (pace[2]-pace[0])/pace[0]*100 : null;
+      const delta = [p25!==null?`${p25>=0?'▲':'▼'} ${Math.abs(p25).toFixed(1)}% vs 2025`:null,
+               p24!==null?`${p24>=0?'▲':'▼'} ${Math.abs(p24).toFixed(1)}% vs 2024`:null]
+               .filter(Boolean).join(' · ') || '—';
+      return `<div class="kpi k${n}"><div class="yr">${n} · by Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div>`+
+             `<div class="val">${fmt(pace[i])}</div><div class="delta">${delta}</div></div>`;
+    }
+    // 2024 / 2025: same-day figure and full-period total, side by side, same size
+    return `<div class="kpi k${n}"><div class="yr">${n}</div>`+
+           `<div class="valrow">`+
+             `<div class="valcol"><div class="sublbl">By Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div><div class="val">${fmt(pace[i])}</div></div>`+
+             `<div class="valcol"><div class="sublbl">Full-period total</div><div class="val">${fmt(full[i])}</div></div>`+
+           `</div></div>`;
+  }).join('');
+
+  const scope = (region===-1?'All Regions':MODEL.regions[region]) + (rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh]) + (center===-1?'':' › '+MODEL.centers[center]);
+  document.getElementById('dayHint').textContent =
+    'Scope: '+scope+' · '+(mode==='cum'?'Cumulative':'Daily')+' · dashed marker = Day '+cur+' (2026 latest)';
+
+  if(dayView==='chart') lineChart(document.getElementById('dayChart'), dd, MODEL.maxDay, cur);
+  else renderDayTable(dd, MODEL.maxDay);
+
+  const rt = catData(MODEL.rtRows, MODEL.rtCats.length);
+  groupedBars(document.getElementById('rtChart'), MODEL.rtCats, rt);
+  catTable(document.getElementById('rtTable'), MODEL.rtCats, rt);
+
+  const pm = catData(MODEL.pmRows, MODEL.pmCats.length);
+  groupedBars(document.getElementById('pmChart'), MODEL.pmCats, pm);
+  catTable(document.getElementById('pmTable'), MODEL.pmCats, pm);
+
+  // summary 2024 vs 2025
+  const met = metData();
+  const labels=['Reg Count','Attendance','Selection','Admission'];
+  const s24=met[0], s25=met[1];
+  groupedBars(document.getElementById('sumChart'),
+      labels, [s24, s25, [0,0,0,0]]);      // 2026 empty
+  let h='<tr><th>Metric</th><th>2024</th><th>2025</th><th>Δ%</th></tr>';
+  labels.forEach((l,i)=>{ const a=s24[i]||0,b=s25[i]||0; const d=a>0?(((b-a)/a)*100).toFixed(1)+'%':'—';
+    h+=`<tr><td>${l}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${d}</td></tr>`;});
+  document.getElementById('sumTable').innerHTML=h;
+
+  renderUnique();
+}
+
+// ---- Unique (by Mobile) tab -------------------------------------------
+function uniScopeVal(y){
+  if(rbh!==-1){   // sum per-center distinct over centers matching the RBH (+ region/center filter)
+    let sum=0;
+    for(const row of MODEL.uniCenter){
+      if(row[0]===y && MODEL.rbhOfCenter[row[2]]===rbh
+         && (region===-1||row[1]===region) && (center===-1||row[2]===center)) sum+=row[3];
+    }
+    return sum;
+  }
+  if(center!==-1){ for(const row of MODEL.uniCenter){ if(row[0]===y&&row[1]===region&&row[2]===center) return row[3]; } return 0; }
+  if(region!==-1){ for(const row of MODEL.uniRegion){ if(row[0]===y&&row[1]===region) return row[2]; } return 0; }
+  return MODEL.uniYear[y];
+}
+function renderUnique(){
+  const u=[uniScopeVal(0),uniScopeVal(1),uniScopeVal(2)];
+  const names=MODEL.years;
+  const scope=(region===-1?'All Regions':MODEL.regions[region])+(rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh])+(center===-1?'':' › '+MODEL.centers[center]);
+  document.getElementById('uniHint').innerHTML='Unique students by mobile number · <b>Scope: '+scope+'</b> · '+
+    '2024/2025 = distinct phones with Reg Count ≥ 1 · 2026 = distinct phones';
+  document.getElementById('uniKpis').innerHTML = names.map((n,i)=>{
+    let delta;
+    if(i===2){
+      const p25=u[1]>0?(u[2]-u[1])/u[1]*100:null, p24=u[0]>0?(u[2]-u[0])/u[0]*100:null;
+      delta=[p25!==null?`${p25>=0?'▲':'▼'} ${Math.abs(p25).toFixed(1)}% vs 2025`:null,
+             p24!==null?`${p24>=0?'▲':'▼'} ${Math.abs(p24).toFixed(1)}% vs 2024`:null].filter(Boolean).join(' · ')||'—';
+    } else { delta='unique mobiles'; }
+    return `<div class="kpi k${n}"><div class="yr">${n} · unique mobiles</div>`+
+           `<div class="val">${fmt(u[i])}</div><div class="delta">${delta}</div></div>`;
+  }).join('');
+  // region breakdown (all regions; ignores center filter)
+  const regN=MODEL.regions.length;
+  const per=[Array(regN).fill(0),Array(regN).fill(0),Array(regN).fill(0)];
+  for(const row of MODEL.uniRegion){ per[row[0]][row[1]]=row[2]; }
+  groupedBars(document.getElementById('uniChart'), MODEL.regions, per, 720, 340);
+  let h='<tr><th>Region</th><th>2024</th><th>2025</th><th>2026</th></tr>';
+  MODEL.regions.forEach((rg,r)=>{ h+=`<tr><td>${rg}</td><td>${fmt(per[0][r])}</td><td>${fmt(per[1][r])}</td><td>${fmt(per[2][r])}</td></tr>`; });
+  h+=`<tr><th>Total (distinct)</th><th>${fmt(MODEL.uniYear[0])}</th><th>${fmt(MODEL.uniYear[1])}</th><th>${fmt(MODEL.uniYear[2])}</th></tr>`;
+  document.getElementById('uniTable').innerHTML=h;
+}
+try { render(); } catch(err){ showErr((err&&err.message?err.message:err)+'\n'+(err&&err.stack?err.stack:'')); }
+</script>
+</body>
+</html>
