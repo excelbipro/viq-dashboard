@@ -150,6 +150,22 @@
   </div>
 
   <div class="card">
+    <h2>Classwise Registration</h2>
+    <div class="hint" id="classHint"></div>
+    <div class="seg" id="classSeg" style="margin-bottom:12px">
+      <button data-cv="chart" class="on">Chart</button>
+      <button data-cv="table">Table</button>
+    </div>
+    <div class="svgwrap" id="classChartWrap"><svg id="classChart" width="1120" height="400" viewBox="0 0 1120 400" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="tablewrap" id="classTableWrap" style="display:none"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--y2024)"></i>2024</span>
+      <span><i class="dot" style="background:var(--y2025)"></i>2025</span>
+      <span><i class="dot" style="background:var(--y2026)"></i>2026</span>
+    </div>
+  </div>
+
+  <div class="card">
     <h2>2024 vs 2025 &mdash; Reg / Attendance / Selection / Admission (sum)</h2>
     <div class="hint">Four-metric totals for the selected scope. 2026 has no count columns, so it is excluded here.</div>
     <div class="svgwrap"><svg id="sumChart" width="720" height="320" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"></svg></div>
@@ -174,8 +190,8 @@
 <script>
 function showErr(t){var e=document.getElementById('errbar'); if(e){e.style.display='block'; e.textContent='⚠ '+t;}}
 window.onerror=function(msg,src,ln,col,err){showErr(msg+(ln?(' :'+ln):'')+(err&&err.stack?('\n'+err.stack):'')); return false;};
-const MODEL = {"years":["2024","2025","2026"],"regions":["04_Online"],"centers":["Online Fee portal","VMC Online"],"regionOfCenter":{"Online Fee portal":0,"VMC Online":0},"rbhs":["VMC Online"],"rbhOfCenter":[0,0],"day1":{"2024":"2024-07-16","2025":"2025-07-16","2026":"2026-07-14"},"maxDay":103,"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,0,1,58,4.0],[0,0,1,45,4.0],[0,0,1,77,5.0],[0,0,1,29,2.0],[0,0,1,89,4.0],[0,0,1,95,19.0],[0,0,1,69,3.0],[0,0,1,33,6.0],[0,0,1,82,9.0],[0,0,1,80,10.0],[0,0,1,78,10.0],[0,0,1,91,5.0],[0,0,1,88,9.0],[0,0,1,4,5.0],[0,0,1,83,9.0],[0,0,1,41,6.0],[0,0,1,93,11.0],[0,0,1,53,1.0],[0,0,1,31,16.0],[0,0,1,81,3.0],[0,0,1,3,13.0],[0,0,1,34,10.0],[0,0,1,84,6.0],[0,0,1,5,8.0],[0,0,1,94,11.0],[0,0,1,7,3.0],[0,0,1,6,2.0],[0,0,1,10,14.0],[0,0,1,11,5.0],[0,0,1,12,15.0],[0,0,1,13,8.0],[0,0,1,15,8.0],[0,0,1,16,12.0],[0,0,1,21,1.0],[0,0,1,32,6.0],[0,0,1,40,4.0],[0,0,1,56,3.0],[0,0,1,71,3.0],[0,0,1,75,3.0],[0,0,1,76,9.0],[0,0,1,90,9.0],[0,0,1,14,13.0],[0,0,1,2,3.0],[0,0,1,30,2.0],[0,0,1,35,5.0],[0,0,1,42,2.0],[0,0,1,43,1.0],[0,0,1,44,2.0],[0,0,1,48,3.0],[0,0,1,51,3.0],[0,0,1,52,1.0],[0,0,1,54,2.0],[0,0,1,55,8.0],[0,0,1,59,3.0],[0,0,1,62,5.0],[0,0,1,65,3.0],[0,0,1,73,4.0],[0,0,1,61,5.0],[0,0,1,85,8.0],[0,0,1,86,6.0],[0,0,1,87,7.0],[0,0,1,96,13.0],[0,0,1,57,2.0],[0,0,1,74,3.0],[0,0,1,17,3.0],[0,0,1,37,2.0],[0,0,1,50,1.0],[0,0,1,60,3.0],[0,0,1,67,2.0],[0,0,1,79,8.0],[0,0,1,8,3.0],[0,0,1,39,2.0],[0,0,1,9,1.0],[0,0,1,19,1.0],[0,0,1,36,1.0],[0,0,1,92,9.0],[0,0,1,64,1.0],[0,0,1,70,3.0],[0,0,1,1,1.0],[0,0,1,24,1.0],[0,0,1,63,2.0],[0,0,1,72,1.0],[0,0,1,22,1.0],[1,0,1,59,257.0],[1,0,1,61,23.0],[1,0,1,60,24.0],[1,0,1,99,234.0],[1,0,1,80,11.0],[1,0,1,16,28.0],[1,0,1,22,128.0],[1,0,1,30,149.0],[1,0,1,66,16.0],[1,0,1,53,79.0],[1,0,1,74,23.0],[1,0,1,62,10.0],[1,0,1,70,3.0],[1,0,1,68,9.0],[1,0,1,36,5.0],[1,0,1,64,12.0],[1,0,1,76,20.0],[1,0,1,23,71.0],[1,0,1,31,121.0],[1,0,1,87,8.0],[1,0,1,14,28.0],[1,0,1,26,68.0],[1,0,1,24,58.0],[1,0,1,27,123.0],[1,0,1,28,96.0],[1,0,1,21,52.0],[1,0,1,19,44.0],[1,0,1,7,7.0],[1,0,1,8,13.0],[1,0,1,13,31.0],[1,0,1,15,19.0],[1,0,1,20,25.0],[1,0,1,29,142.0],[1,0,1,52,5.0],[1,0,1,45,4.0],[1,0,1,4,6.0],[1,0,1,18,36.0],[1,0,1,12,21.0],[1,0,1,75,13.0],[1,0,1,77,3.0],[1,0,1,81,21.0],[1,0,1,25,49.0],[1,0,1,39,5.0],[1,0,1,69,9.0],[1,0,1,93,9.0],[1,0,1,94,7.0],[1,0,1,100,10.0],[1,0,1,102,16.0],[1,0,1,88,20.0],[1,0,1,11,36.0],[1,0,1,92,13.0],[1,0,1,40,5.0],[1,0,1,54,6.0],[1,0,1,71,10.0],[1,0,1,83,7.0],[1,0,1,86,12.0],[1,0,1,2,4.0],[1,0,1,33,10.0],[1,0,1,37,7.0],[1,0,1,58,8.0],[1,0,1,63,4.0],[1,0,1,78,11.0],[1,0,1,47,6.0],[1,0,1,67,7.0],[1,0,1,82,17.0],[1,0,1,84,11.0],[1,0,1,89,13.0],[1,0,1,35,6.0],[1,0,1,9,10.0],[1,0,1,38,4.0],[1,0,1,43,10.0],[1,0,1,72,6.0],[1,0,1,85,9.0],[1,0,1,90,11.0],[1,0,1,95,9.0],[1,0,1,97,1.0],[1,0,1,98,6.0],[1,0,1,101,7.0],[1,0,1,103,6.0],[1,0,1,6,8.0],[1,0,1,10,4.0],[1,0,1,17,29.0],[1,0,1,34,2.0],[1,0,1,46,5.0],[1,0,1,55,9.0],[1,0,1,65,16.0],[1,0,1,48,4.0],[1,0,1,56,2.0],[1,0,1,57,2.0],[1,0,1,79,9.0],[1,0,1,91,11.0],[1,0,1,50,2.0],[1,0,1,3,1.0],[1,0,1,42,6.0],[1,0,1,51,3.0],[1,0,1,96,5.0],[1,0,1,44,5.0],[1,0,1,49,3.0],[1,0,1,32,2.0],[1,0,1,5,2.0],[1,0,1,41,2.0],[1,0,1,1,0.0],[1,0,1,73,1.0],[2,0,1,1,5.0],[2,0,1,2,6.0],[2,0,1,3,18.0],[2,0,1,4,47.0],[2,0,1,5,79.0],[2,0,1,6,120.0],[2,0,1,7,117.0],[2,0,1,8,131.0],[2,0,1,9,134.0],[2,0,1,10,569.0],[2,0,1,11,306.0],[2,0,1,12,270.0],[2,0,1,13,475.0],[2,0,1,14,321.0],[2,0,1,15,686.0],[2,0,1,16,490.0],[2,0,1,17,343.0],[2,0,1,18,292.0],[2,0,0,10,1.0],[2,0,0,13,1.0]],"pmRows":[[0,0,1,1,297.0],[0,0,1,0,147.0],[1,0,1,0,2076.0],[1,0,1,1,500.0],[2,0,1,0,4409.0],[2,0,0,0,2.0]],"rtRows":[[0,0,1,0,434.0],[0,0,1,2,4.0],[0,0,1,1,6.0],[1,0,1,2,387.0],[1,0,1,0,1813.0],[1,0,1,3,100.0],[1,0,1,1,276.0],[2,0,1,0,4163.0],[2,0,1,3,236.0],[2,0,1,1,2.0],[2,0,1,2,8.0],[2,0,0,0,2.0]],"metRows":[[0,0,1,444.0,299.0,316.0,23.0],[1,0,1,2576.0,900.0,788.0,147.0],[2,0,1,0.0,0.0,0.0,0.0],[2,0,0,0.0,0.0,0.0,0.0]],"uniCenter":[[0,0,1,443],[1,0,1,2416],[2,0,1,4214],[2,0,0,2]],"uniRegion":[[0,0,443],[1,0,2416],[2,0,4216]],"uniYear":[443,2416,4216],"rbhName":"VMC Online"};
-const GEN = "2026-08-01 07:27";
+const MODEL = {"years":["2024","2025","2026"],"regions":["04_Online"],"centers":["Online Fee portal","VMC Online"],"regionOfCenter":{"Online Fee portal":0,"VMC Online":0},"rbhs":["VMC Online"],"rbhOfCenter":[0,0],"day1":{"2024":"2024-07-16","2025":"2025-07-16","2026":"2026-07-14"},"maxDay":103,"curDay":18,"classes":["6","7","8","9","10","11E","11M","12E","12M","13E","13M"],"classRows":[[0,0,1,5,0.0,18.0,72.0],[0,0,1,0,0.0,10.0,54.0],[0,0,1,4,0.0,19.0,48.0],[0,0,1,1,0.0,12.0,105.0],[0,0,1,3,0.0,20.0,61.0],[0,0,1,2,0.0,12.0,37.0],[0,0,1,7,0.0,17.0,41.0],[0,0,1,8,0.0,8.0,15.0],[0,0,1,6,0.0,1.0,11.0],[1,0,1,7,8.0,30.0,247.0],[1,0,1,5,5.0,46.0,469.0],[1,0,1,4,4.0,59.0,538.0],[1,0,1,3,6.0,55.0,408.0],[1,0,1,9,0.0,1.0,75.0],[1,0,1,6,1.0,11.0,103.0],[1,0,1,2,2.0,32.0,264.0],[1,0,1,1,3.0,21.0,163.0],[1,0,1,0,2.0,12.0,143.0],[1,0,1,8,5.0,16.0,109.0],[1,0,1,10,0.0,0.0,57.0],[2,0,1,0,27.0,403.0,403.0],[2,0,1,6,11.0,194.0,194.0],[2,0,1,5,29.0,474.0,474.0],[2,0,1,4,63.0,805.0,805.0],[2,0,1,2,25.0,287.0,287.0],[2,0,1,7,36.0,515.0,515.0],[2,0,1,10,16.0,408.0,408.0],[2,0,1,3,32.0,441.0,441.0],[2,0,1,1,7.0,204.0,204.0],[2,0,1,9,24.0,422.0,422.0],[2,0,1,8,22.0,256.0,256.0],[2,0,0,1,0.0,2.0,2.0]],"blankClass":[0,0,0],"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,0,1,58,4.0],[0,0,1,45,4.0],[0,0,1,77,5.0],[0,0,1,29,2.0],[0,0,1,89,4.0],[0,0,1,95,19.0],[0,0,1,69,3.0],[0,0,1,33,6.0],[0,0,1,82,9.0],[0,0,1,80,10.0],[0,0,1,78,10.0],[0,0,1,91,5.0],[0,0,1,88,9.0],[0,0,1,4,5.0],[0,0,1,83,9.0],[0,0,1,41,6.0],[0,0,1,93,11.0],[0,0,1,53,1.0],[0,0,1,31,16.0],[0,0,1,81,3.0],[0,0,1,3,13.0],[0,0,1,34,10.0],[0,0,1,84,6.0],[0,0,1,5,8.0],[0,0,1,94,11.0],[0,0,1,7,3.0],[0,0,1,6,2.0],[0,0,1,10,14.0],[0,0,1,11,5.0],[0,0,1,12,15.0],[0,0,1,13,8.0],[0,0,1,15,8.0],[0,0,1,16,12.0],[0,0,1,21,1.0],[0,0,1,32,6.0],[0,0,1,40,4.0],[0,0,1,56,3.0],[0,0,1,71,3.0],[0,0,1,75,3.0],[0,0,1,76,9.0],[0,0,1,90,9.0],[0,0,1,14,13.0],[0,0,1,2,3.0],[0,0,1,30,2.0],[0,0,1,35,5.0],[0,0,1,42,2.0],[0,0,1,43,1.0],[0,0,1,44,2.0],[0,0,1,48,3.0],[0,0,1,51,3.0],[0,0,1,52,1.0],[0,0,1,54,2.0],[0,0,1,55,8.0],[0,0,1,59,3.0],[0,0,1,62,5.0],[0,0,1,65,3.0],[0,0,1,73,4.0],[0,0,1,61,5.0],[0,0,1,85,8.0],[0,0,1,86,6.0],[0,0,1,87,7.0],[0,0,1,96,13.0],[0,0,1,57,2.0],[0,0,1,74,3.0],[0,0,1,17,3.0],[0,0,1,37,2.0],[0,0,1,50,1.0],[0,0,1,60,3.0],[0,0,1,67,2.0],[0,0,1,79,8.0],[0,0,1,8,3.0],[0,0,1,39,2.0],[0,0,1,9,1.0],[0,0,1,19,1.0],[0,0,1,36,1.0],[0,0,1,92,9.0],[0,0,1,64,1.0],[0,0,1,70,3.0],[0,0,1,1,1.0],[0,0,1,24,1.0],[0,0,1,63,2.0],[0,0,1,72,1.0],[0,0,1,22,1.0],[1,0,1,59,257.0],[1,0,1,61,23.0],[1,0,1,60,24.0],[1,0,1,99,234.0],[1,0,1,80,11.0],[1,0,1,16,28.0],[1,0,1,22,128.0],[1,0,1,30,149.0],[1,0,1,66,16.0],[1,0,1,53,79.0],[1,0,1,74,23.0],[1,0,1,62,10.0],[1,0,1,70,3.0],[1,0,1,68,9.0],[1,0,1,36,5.0],[1,0,1,64,12.0],[1,0,1,76,20.0],[1,0,1,23,71.0],[1,0,1,31,121.0],[1,0,1,87,8.0],[1,0,1,14,28.0],[1,0,1,26,68.0],[1,0,1,24,58.0],[1,0,1,27,123.0],[1,0,1,28,96.0],[1,0,1,21,52.0],[1,0,1,19,44.0],[1,0,1,7,7.0],[1,0,1,8,13.0],[1,0,1,13,31.0],[1,0,1,15,19.0],[1,0,1,20,25.0],[1,0,1,29,142.0],[1,0,1,52,5.0],[1,0,1,45,4.0],[1,0,1,4,6.0],[1,0,1,18,36.0],[1,0,1,12,21.0],[1,0,1,75,13.0],[1,0,1,77,3.0],[1,0,1,81,21.0],[1,0,1,25,49.0],[1,0,1,39,5.0],[1,0,1,69,9.0],[1,0,1,93,9.0],[1,0,1,94,7.0],[1,0,1,100,10.0],[1,0,1,102,16.0],[1,0,1,88,20.0],[1,0,1,11,36.0],[1,0,1,92,13.0],[1,0,1,40,5.0],[1,0,1,54,6.0],[1,0,1,71,10.0],[1,0,1,83,7.0],[1,0,1,86,12.0],[1,0,1,2,4.0],[1,0,1,33,10.0],[1,0,1,37,7.0],[1,0,1,58,8.0],[1,0,1,63,4.0],[1,0,1,78,11.0],[1,0,1,47,6.0],[1,0,1,67,7.0],[1,0,1,82,17.0],[1,0,1,84,11.0],[1,0,1,89,13.0],[1,0,1,35,6.0],[1,0,1,9,10.0],[1,0,1,38,4.0],[1,0,1,43,10.0],[1,0,1,72,6.0],[1,0,1,85,9.0],[1,0,1,90,11.0],[1,0,1,95,9.0],[1,0,1,97,1.0],[1,0,1,98,6.0],[1,0,1,101,7.0],[1,0,1,103,6.0],[1,0,1,6,8.0],[1,0,1,10,4.0],[1,0,1,17,29.0],[1,0,1,34,2.0],[1,0,1,46,5.0],[1,0,1,55,9.0],[1,0,1,65,16.0],[1,0,1,48,4.0],[1,0,1,56,2.0],[1,0,1,57,2.0],[1,0,1,79,9.0],[1,0,1,91,11.0],[1,0,1,50,2.0],[1,0,1,3,1.0],[1,0,1,42,6.0],[1,0,1,51,3.0],[1,0,1,96,5.0],[1,0,1,44,5.0],[1,0,1,49,3.0],[1,0,1,32,2.0],[1,0,1,5,2.0],[1,0,1,41,2.0],[1,0,1,1,0.0],[1,0,1,73,1.0],[2,0,1,1,5.0],[2,0,1,2,6.0],[2,0,1,3,18.0],[2,0,1,4,47.0],[2,0,1,5,79.0],[2,0,1,6,120.0],[2,0,1,7,117.0],[2,0,1,8,131.0],[2,0,1,9,134.0],[2,0,1,10,569.0],[2,0,1,11,306.0],[2,0,1,12,270.0],[2,0,1,13,475.0],[2,0,1,14,321.0],[2,0,1,15,686.0],[2,0,1,16,490.0],[2,0,1,17,343.0],[2,0,1,18,292.0],[2,0,0,10,1.0],[2,0,0,13,1.0]],"pmRows":[[0,0,1,1,297.0],[0,0,1,0,147.0],[1,0,1,0,2076.0],[1,0,1,1,500.0],[2,0,1,0,4409.0],[2,0,0,0,2.0]],"rtRows":[[0,0,1,0,434.0],[0,0,1,2,4.0],[0,0,1,1,6.0],[1,0,1,2,387.0],[1,0,1,0,1813.0],[1,0,1,3,100.0],[1,0,1,1,276.0],[2,0,1,0,4163.0],[2,0,1,3,236.0],[2,0,1,1,2.0],[2,0,1,2,8.0],[2,0,0,0,2.0]],"metRows":[[0,0,1,444.0,299.0,316.0,23.0],[1,0,1,2576.0,900.0,788.0,147.0],[2,0,1,0.0,0.0,0.0,0.0],[2,0,0,0.0,0.0,0.0,0.0]],"uniCenter":[[0,0,1,443],[1,0,1,2416],[2,0,1,4214],[2,0,0,2]],"uniRegion":[[0,0,443],[1,0,2416],[2,0,4216]],"uniYear":[443,2416,4216],"rbhName":"VMC Online"};
+const GEN = "2026-08-01 08:33";
 function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
 const YVAR={0:'--y2024',1:'--y2025',2:'--y2026'};
 function yc(i){return getVar(YVAR[i]);}
@@ -190,7 +206,7 @@ function ddate(iso,add){ if(!iso) return ''; var p=(''+iso).split('-');
   var d=new Date(+p[0], (+p[1])-1, +p[2]); d.setDate(d.getDate()+(add||0));
   var day=d.getDate(); return (day<10?'0':'')+day+' '+MON[d.getMonth()]; }
 
-let region = -1, center = -1, rbh = -1, mode = 'daily', dayView = 'chart';
+let region = -1, center = -1, rbh = -1, mode = 'daily', dayView = 'chart', classView = 'chart';
 let blinkDay = true;   // 'By Day' figure blinks for the first 20s (see timer below)
 
 // ---- floating tooltip (Power BI style)
@@ -249,6 +265,13 @@ document.querySelectorAll('#viewSeg button').forEach(b=>{
     document.getElementById('dayChartWrap').style.display = dayView==='chart'?'block':'none';
     document.getElementById('dayTableWrap').style.display = dayView==='table'?'block':'none';
     render();};
+});
+document.querySelectorAll('#classSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#classSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); classView=b.dataset.cv;
+    document.getElementById('classChartWrap').style.display = classView==='chart'?'block':'none';
+    document.getElementById('classTableWrap').style.display = classView==='table'?'block':'none';
+    renderClass();};
 });
 function switchTab(t){ var cmp=(t==='cmp');
   document.getElementById('tabComparison').style.display = cmp?'block':'none';
@@ -383,28 +406,26 @@ function catTable(el, cats, per){
 // ---- render everything --------------------------------------------------
 function render(){
   const dd = dayData();
-  const cur = currentDay2026();
+  const cur = MODEL.curDay;                        // as-on day (2026 latest, global)
   const cum = cumArrays(dd, MODEL.maxDay);
-  const pace = [cum[0][cur], cum[1][cur], cum[2][cur]];   // same-day cumulative per year
+  const pace = [cum[0][cur]||0, cum[1][cur]||0, cum[2][cur]||0];   // By Day = cumulative to day N
+  const dayTot = [dd[0][cur]||0, dd[1][cur]||0, dd[2][cur]||0];    // Day Total = day N alone
+  const full = [0,1,2].map(y=>Object.values(dd[y]).reduce((a,b)=>a+b,0));   // Grand Total
   const names = MODEL.years;
-  const full=[0,1,2].map(y=>Object.values(dd[y]).reduce((a,b)=>a+b,0));   // full-period totals
-  // ---- KPI tiles = same-day pace; 2024/2025 also show full-period total, 2026 shows growth
+  // ---- KPI tiles: By Day | Day Total | Grand Total  (2026: By Day | Day Total + growth)
   document.getElementById('kpis').innerHTML = names.map((n,i)=>{
+    const byday = `<div class="valcol"><div class="sublbl">By Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div><div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div></div>`;
+    const dtot  = `<div class="valcol"><div class="sublbl">Day Total (Day ${cur})</div><div class="val">${fmt(dayTot[i])}</div></div>`;
     if(i===2){
       const p25 = pace[1]>0 ? (pace[2]-pace[1])/pace[1]*100 : null;
       const p24 = pace[0]>0 ? (pace[2]-pace[0])/pace[0]*100 : null;
       const delta = [p25!==null?`${p25>=0?'▲':'▼'} ${Math.abs(p25).toFixed(1)}% vs 2025`:null,
                p24!==null?`${p24>=0?'▲':'▼'} ${Math.abs(p24).toFixed(1)}% vs 2024`:null]
                .filter(Boolean).join(' · ') || '—';
-      return `<div class="kpi k${n}"><div class="yr">${n} · by Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div>`+
-             `<div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div><div class="delta">${delta}</div></div>`;
+      return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}</div><div class="delta">${delta}</div></div>`;
     }
-    // 2024 / 2025: same-day figure and full-period total, side by side, same size
-    return `<div class="kpi k${n}"><div class="yr">${n}</div>`+
-           `<div class="valrow">`+
-             `<div class="valcol"><div class="sublbl">By Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div><div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div></div>`+
-             `<div class="valcol"><div class="sublbl">Full-period total</div><div class="val">${fmt(full[i])}</div></div>`+
-           `</div></div>`;
+    const gtot = `<div class="valcol"><div class="sublbl">Grand Total</div><div class="val">${fmt(full[i])}</div></div>`;
+    return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}${gtot}</div></div>`;
   }).join('');
 
   const scope = (region===-1?'All Regions':MODEL.regions[region]) + (rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh]) + (center===-1?'':' › '+MODEL.centers[center]);
@@ -433,7 +454,45 @@ function render(){
     h+=`<tr><td>${l}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${d}</td></tr>`;});
   document.getElementById('sumTable').innerHTML=h;
 
+  renderClass();
   renderUnique();
+}
+
+// ---- Classwise Registration -------------------------------------------
+function classData(){
+  const nc = MODEL.classes.length;
+  const mk = ()=>[Array(nc).fill(0),Array(nc).fill(0),Array(nc).fill(0)];   // [year][classIdx]
+  const P = [mk(), mk(), mk()];   // P[metric][year][classIdx]  metric 0=dayTotal 1=tillDate 2=grand
+  for(const [y,r,c,k,dt,td,gr] of MODEL.classRows){
+    if(match(r,c)){ P[0][y][k]+=dt; P[1][y][k]+=td; P[2][y][k]+=gr; }
+  }
+  return P;
+}
+function renderClass(){
+  const P = classData();
+  const bc = MODEL.blankClass;
+  document.getElementById('classHint').innerHTML =
+    'Chart = <b>Till-date</b> (cumulative to Day '+MODEL.curDay+'). Table shows Day&nbsp;Total / Till-date / Grand&nbsp;Total per class. '+
+    'Rows with no class &rarr; "(No Class)"  ·  blank/unmatched: 2024='+fmt(bc[0])+', 2025='+fmt(bc[1])+', 2026='+fmt(bc[2]);
+  // chart: grouped bars, classes x 3 years, Till-date measure
+  groupedBars(document.getElementById('classChart'), MODEL.classes, [P[1][0],P[1][1],P[1][2]], 1120, 400);
+  // table: wide, all three measures per year (2026 has no grand total)
+  let h='<table><thead>'+
+    '<tr><th rowspan="2">Class</th><th colspan="3">2024</th><th colspan="3">2025</th><th colspan="2">2026</th></tr>'+
+    '<tr><th>Day</th><th>Till-date</th><th>Grand</th><th>Day</th><th>Till-date</th><th>Grand</th><th>Day</th><th>Till-date</th></tr>'+
+    '</thead><tbody>';
+  MODEL.classes.forEach((cl,k)=>{
+    h+=`<tr><td>${cl}</td>`+
+       `<td>${fmt(P[0][0][k])}</td><td>${fmt(P[1][0][k])}</td><td>${fmt(P[2][0][k])}</td>`+
+       `<td>${fmt(P[0][1][k])}</td><td>${fmt(P[1][1][k])}</td><td>${fmt(P[2][1][k])}</td>`+
+       `<td>${fmt(P[0][2][k])}</td><td>${fmt(P[1][2][k])}</td></tr>`;
+  });
+  const cs=(m,y)=>{let s=0;for(let k=0;k<MODEL.classes.length;k++)s+=P[m][y][k];return s;};
+  h+=`<tr><th>Total</th>`+
+     `<th>${fmt(cs(0,0))}</th><th>${fmt(cs(1,0))}</th><th>${fmt(cs(2,0))}</th>`+
+     `<th>${fmt(cs(0,1))}</th><th>${fmt(cs(1,1))}</th><th>${fmt(cs(2,1))}</th>`+
+     `<th>${fmt(cs(0,2))}</th><th>${fmt(cs(1,2))}</th></tr></tbody></table>`;
+  document.getElementById('classTableWrap').innerHTML=h;
 }
 
 // ---- Unique (by Mobile) tab -------------------------------------------

@@ -150,6 +150,22 @@
   </div>
 
   <div class="card">
+    <h2>Classwise Registration</h2>
+    <div class="hint" id="classHint"></div>
+    <div class="seg" id="classSeg" style="margin-bottom:12px">
+      <button data-cv="chart" class="on">Chart</button>
+      <button data-cv="table">Table</button>
+    </div>
+    <div class="svgwrap" id="classChartWrap"><svg id="classChart" width="1120" height="400" viewBox="0 0 1120 400" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="tablewrap" id="classTableWrap" style="display:none"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--y2024)"></i>2024</span>
+      <span><i class="dot" style="background:var(--y2025)"></i>2025</span>
+      <span><i class="dot" style="background:var(--y2026)"></i>2026</span>
+    </div>
+  </div>
+
+  <div class="card">
     <h2>2024 vs 2025 &mdash; Reg / Attendance / Selection / Admission (sum)</h2>
     <div class="hint">Four-metric totals for the selected scope. 2026 has no count columns, so it is excluded here.</div>
     <div class="svgwrap"><svg id="sumChart" width="720" height="320" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"></svg></div>
@@ -174,8 +190,8 @@
 <script>
 function showErr(t){var e=document.getElementById('errbar'); if(e){e.style.display='block'; e.textContent='⚠ '+t;}}
 window.onerror=function(msg,src,ln,col,err){showErr(msg+(ln?(' :'+ln):'')+(err&&err.stack?('\n'+err.stack):'')); return false;};
-const MODEL = {"years":["2024","2025","2026"],"regions":["Closed"],"centers":["Closed"],"regionOfCenter":{"Closed":0},"rbhs":["ONCR"],"rbhOfCenter":[0],"day1":{"2024":"2024-07-16","2025":null,"2026":null},"maxDay":96,"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,0,0,55,9.0],[0,0,0,42,2.0],[0,0,0,94,6.0],[0,0,0,16,162.0],[0,0,0,5,9.0],[0,0,0,7,1.0],[0,0,0,8,6.0],[0,0,0,10,25.0],[0,0,0,11,8.0],[0,0,0,12,78.0],[0,0,0,13,44.0],[0,0,0,14,110.0],[0,0,0,15,106.0],[0,0,0,31,24.0],[0,0,0,33,240.0],[0,0,0,34,8.0],[0,0,0,35,25.0],[0,0,0,44,4.0],[0,0,0,49,69.0],[0,0,0,53,3.0],[0,0,0,57,7.0],[0,0,0,59,7.0],[0,0,0,71,4.0],[0,0,0,80,95.0],[0,0,0,9,6.0],[0,0,0,18,2.0],[0,0,0,32,8.0],[0,0,0,51,3.0],[0,0,0,82,3.0],[0,0,0,3,5.0],[0,0,0,4,0.0],[0,0,0,6,5.0],[0,0,0,37,13.0],[0,0,0,38,3.0],[0,0,0,40,3.0],[0,0,0,41,3.0],[0,0,0,46,1.0],[0,0,0,47,6.0],[0,0,0,48,4.0],[0,0,0,50,1.0],[0,0,0,54,6.0],[0,0,0,56,5.0],[0,0,0,60,5.0],[0,0,0,61,7.0],[0,0,0,62,4.0],[0,0,0,66,5.0],[0,0,0,67,2.0],[0,0,0,70,3.0],[0,0,0,73,6.0],[0,0,0,74,3.0],[0,0,0,76,1.0],[0,0,0,77,1.0],[0,0,0,78,3.0],[0,0,0,83,3.0],[0,0,0,86,1.0],[0,0,0,87,4.0],[0,0,0,90,4.0],[0,0,0,95,5.0],[0,0,0,96,5.0],[0,0,0,28,1.0],[0,0,0,43,2.0],[0,0,0,52,2.0],[0,0,0,58,3.0],[0,0,0,69,6.0],[0,0,0,89,2.0],[0,0,0,26,1.0],[0,0,0,75,1.0],[0,0,0,1,1.0],[0,0,0,17,2.0],[0,0,0,29,1.0],[0,0,0,39,2.0],[0,0,0,64,1.0],[0,0,0,63,2.0],[0,0,0,68,4.0],[0,0,0,81,2.0],[0,0,0,85,1.0],[0,0,0,91,2.0],[0,0,0,21,1.0],[0,0,0,25,1.0],[0,0,0,92,1.0],[0,0,0,2,1.0],[0,0,0,84,1.0],[0,0,0,19,2.0],[0,0,0,65,1.0]],"pmRows":[[0,0,0,1,201.0],[0,0,0,0,1034.0]],"rtRows":[[0,0,0,0,838.0],[0,0,0,2,397.0]],"metRows":[[0,0,0,1235.0,394.0,259.0,3.0]],"uniCenter":[[0,0,0,1231]],"uniRegion":[[0,0,1231]],"uniYear":[1231,0,0],"rbhName":"ONCR"};
-const GEN = "2026-08-01 07:27";
+const MODEL = {"years":["2024","2025","2026"],"regions":["Closed"],"centers":["Closed"],"regionOfCenter":{"Closed":0},"rbhs":["ONCR"],"rbhOfCenter":[0],"day1":{"2024":"2024-07-16","2025":null,"2026":null},"maxDay":96,"curDay":96,"classes":["6","7","8","9","10","11E","11M","12E","12M"],"classRows":[[0,0,0,2,0.0,213.0,213.0],[0,0,0,1,0.0,20.0,20.0],[0,0,0,5,3.0,133.0,133.0],[0,0,0,7,0.0,182.0,182.0],[0,0,0,8,0.0,216.0,216.0],[0,0,0,4,1.0,237.0,237.0],[0,0,0,6,0.0,86.0,86.0],[0,0,0,3,1.0,122.0,122.0],[0,0,0,0,0.0,26.0,26.0]],"blankClass":[0,0,0],"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,0,0,55,9.0],[0,0,0,42,2.0],[0,0,0,94,6.0],[0,0,0,16,162.0],[0,0,0,5,9.0],[0,0,0,7,1.0],[0,0,0,8,6.0],[0,0,0,10,25.0],[0,0,0,11,8.0],[0,0,0,12,78.0],[0,0,0,13,44.0],[0,0,0,14,110.0],[0,0,0,15,106.0],[0,0,0,31,24.0],[0,0,0,33,240.0],[0,0,0,34,8.0],[0,0,0,35,25.0],[0,0,0,44,4.0],[0,0,0,49,69.0],[0,0,0,53,3.0],[0,0,0,57,7.0],[0,0,0,59,7.0],[0,0,0,71,4.0],[0,0,0,80,95.0],[0,0,0,9,6.0],[0,0,0,18,2.0],[0,0,0,32,8.0],[0,0,0,51,3.0],[0,0,0,82,3.0],[0,0,0,3,5.0],[0,0,0,4,0.0],[0,0,0,6,5.0],[0,0,0,37,13.0],[0,0,0,38,3.0],[0,0,0,40,3.0],[0,0,0,41,3.0],[0,0,0,46,1.0],[0,0,0,47,6.0],[0,0,0,48,4.0],[0,0,0,50,1.0],[0,0,0,54,6.0],[0,0,0,56,5.0],[0,0,0,60,5.0],[0,0,0,61,7.0],[0,0,0,62,4.0],[0,0,0,66,5.0],[0,0,0,67,2.0],[0,0,0,70,3.0],[0,0,0,73,6.0],[0,0,0,74,3.0],[0,0,0,76,1.0],[0,0,0,77,1.0],[0,0,0,78,3.0],[0,0,0,83,3.0],[0,0,0,86,1.0],[0,0,0,87,4.0],[0,0,0,90,4.0],[0,0,0,95,5.0],[0,0,0,96,5.0],[0,0,0,28,1.0],[0,0,0,43,2.0],[0,0,0,52,2.0],[0,0,0,58,3.0],[0,0,0,69,6.0],[0,0,0,89,2.0],[0,0,0,26,1.0],[0,0,0,75,1.0],[0,0,0,1,1.0],[0,0,0,17,2.0],[0,0,0,29,1.0],[0,0,0,39,2.0],[0,0,0,64,1.0],[0,0,0,63,2.0],[0,0,0,68,4.0],[0,0,0,81,2.0],[0,0,0,85,1.0],[0,0,0,91,2.0],[0,0,0,21,1.0],[0,0,0,25,1.0],[0,0,0,92,1.0],[0,0,0,2,1.0],[0,0,0,84,1.0],[0,0,0,19,2.0],[0,0,0,65,1.0]],"pmRows":[[0,0,0,1,201.0],[0,0,0,0,1034.0]],"rtRows":[[0,0,0,0,838.0],[0,0,0,2,397.0]],"metRows":[[0,0,0,1235.0,394.0,259.0,3.0]],"uniCenter":[[0,0,0,1231]],"uniRegion":[[0,0,1231]],"uniYear":[1231,0,0],"rbhName":"ONCR"};
+const GEN = "2026-08-01 08:33";
 function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
 const YVAR={0:'--y2024',1:'--y2025',2:'--y2026'};
 function yc(i){return getVar(YVAR[i]);}
@@ -190,7 +206,7 @@ function ddate(iso,add){ if(!iso) return ''; var p=(''+iso).split('-');
   var d=new Date(+p[0], (+p[1])-1, +p[2]); d.setDate(d.getDate()+(add||0));
   var day=d.getDate(); return (day<10?'0':'')+day+' '+MON[d.getMonth()]; }
 
-let region = -1, center = -1, rbh = -1, mode = 'daily', dayView = 'chart';
+let region = -1, center = -1, rbh = -1, mode = 'daily', dayView = 'chart', classView = 'chart';
 let blinkDay = true;   // 'By Day' figure blinks for the first 20s (see timer below)
 
 // ---- floating tooltip (Power BI style)
@@ -249,6 +265,13 @@ document.querySelectorAll('#viewSeg button').forEach(b=>{
     document.getElementById('dayChartWrap').style.display = dayView==='chart'?'block':'none';
     document.getElementById('dayTableWrap').style.display = dayView==='table'?'block':'none';
     render();};
+});
+document.querySelectorAll('#classSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#classSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); classView=b.dataset.cv;
+    document.getElementById('classChartWrap').style.display = classView==='chart'?'block':'none';
+    document.getElementById('classTableWrap').style.display = classView==='table'?'block':'none';
+    renderClass();};
 });
 function switchTab(t){ var cmp=(t==='cmp');
   document.getElementById('tabComparison').style.display = cmp?'block':'none';
@@ -383,28 +406,26 @@ function catTable(el, cats, per){
 // ---- render everything --------------------------------------------------
 function render(){
   const dd = dayData();
-  const cur = currentDay2026();
+  const cur = MODEL.curDay;                        // as-on day (2026 latest, global)
   const cum = cumArrays(dd, MODEL.maxDay);
-  const pace = [cum[0][cur], cum[1][cur], cum[2][cur]];   // same-day cumulative per year
+  const pace = [cum[0][cur]||0, cum[1][cur]||0, cum[2][cur]||0];   // By Day = cumulative to day N
+  const dayTot = [dd[0][cur]||0, dd[1][cur]||0, dd[2][cur]||0];    // Day Total = day N alone
+  const full = [0,1,2].map(y=>Object.values(dd[y]).reduce((a,b)=>a+b,0));   // Grand Total
   const names = MODEL.years;
-  const full=[0,1,2].map(y=>Object.values(dd[y]).reduce((a,b)=>a+b,0));   // full-period totals
-  // ---- KPI tiles = same-day pace; 2024/2025 also show full-period total, 2026 shows growth
+  // ---- KPI tiles: By Day | Day Total | Grand Total  (2026: By Day | Day Total + growth)
   document.getElementById('kpis').innerHTML = names.map((n,i)=>{
+    const byday = `<div class="valcol"><div class="sublbl">By Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div><div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div></div>`;
+    const dtot  = `<div class="valcol"><div class="sublbl">Day Total (Day ${cur})</div><div class="val">${fmt(dayTot[i])}</div></div>`;
     if(i===2){
       const p25 = pace[1]>0 ? (pace[2]-pace[1])/pace[1]*100 : null;
       const p24 = pace[0]>0 ? (pace[2]-pace[0])/pace[0]*100 : null;
       const delta = [p25!==null?`${p25>=0?'▲':'▼'} ${Math.abs(p25).toFixed(1)}% vs 2025`:null,
                p24!==null?`${p24>=0?'▲':'▼'} ${Math.abs(p24).toFixed(1)}% vs 2024`:null]
                .filter(Boolean).join(' · ') || '—';
-      return `<div class="kpi k${n}"><div class="yr">${n} · by Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div>`+
-             `<div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div><div class="delta">${delta}</div></div>`;
+      return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}</div><div class="delta">${delta}</div></div>`;
     }
-    // 2024 / 2025: same-day figure and full-period total, side by side, same size
-    return `<div class="kpi k${n}"><div class="yr">${n}</div>`+
-           `<div class="valrow">`+
-             `<div class="valcol"><div class="sublbl">By Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div><div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div></div>`+
-             `<div class="valcol"><div class="sublbl">Full-period total</div><div class="val">${fmt(full[i])}</div></div>`+
-           `</div></div>`;
+    const gtot = `<div class="valcol"><div class="sublbl">Grand Total</div><div class="val">${fmt(full[i])}</div></div>`;
+    return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}${gtot}</div></div>`;
   }).join('');
 
   const scope = (region===-1?'All Regions':MODEL.regions[region]) + (rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh]) + (center===-1?'':' › '+MODEL.centers[center]);
@@ -433,7 +454,45 @@ function render(){
     h+=`<tr><td>${l}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${d}</td></tr>`;});
   document.getElementById('sumTable').innerHTML=h;
 
+  renderClass();
   renderUnique();
+}
+
+// ---- Classwise Registration -------------------------------------------
+function classData(){
+  const nc = MODEL.classes.length;
+  const mk = ()=>[Array(nc).fill(0),Array(nc).fill(0),Array(nc).fill(0)];   // [year][classIdx]
+  const P = [mk(), mk(), mk()];   // P[metric][year][classIdx]  metric 0=dayTotal 1=tillDate 2=grand
+  for(const [y,r,c,k,dt,td,gr] of MODEL.classRows){
+    if(match(r,c)){ P[0][y][k]+=dt; P[1][y][k]+=td; P[2][y][k]+=gr; }
+  }
+  return P;
+}
+function renderClass(){
+  const P = classData();
+  const bc = MODEL.blankClass;
+  document.getElementById('classHint').innerHTML =
+    'Chart = <b>Till-date</b> (cumulative to Day '+MODEL.curDay+'). Table shows Day&nbsp;Total / Till-date / Grand&nbsp;Total per class. '+
+    'Rows with no class &rarr; "(No Class)"  ·  blank/unmatched: 2024='+fmt(bc[0])+', 2025='+fmt(bc[1])+', 2026='+fmt(bc[2]);
+  // chart: grouped bars, classes x 3 years, Till-date measure
+  groupedBars(document.getElementById('classChart'), MODEL.classes, [P[1][0],P[1][1],P[1][2]], 1120, 400);
+  // table: wide, all three measures per year (2026 has no grand total)
+  let h='<table><thead>'+
+    '<tr><th rowspan="2">Class</th><th colspan="3">2024</th><th colspan="3">2025</th><th colspan="2">2026</th></tr>'+
+    '<tr><th>Day</th><th>Till-date</th><th>Grand</th><th>Day</th><th>Till-date</th><th>Grand</th><th>Day</th><th>Till-date</th></tr>'+
+    '</thead><tbody>';
+  MODEL.classes.forEach((cl,k)=>{
+    h+=`<tr><td>${cl}</td>`+
+       `<td>${fmt(P[0][0][k])}</td><td>${fmt(P[1][0][k])}</td><td>${fmt(P[2][0][k])}</td>`+
+       `<td>${fmt(P[0][1][k])}</td><td>${fmt(P[1][1][k])}</td><td>${fmt(P[2][1][k])}</td>`+
+       `<td>${fmt(P[0][2][k])}</td><td>${fmt(P[1][2][k])}</td></tr>`;
+  });
+  const cs=(m,y)=>{let s=0;for(let k=0;k<MODEL.classes.length;k++)s+=P[m][y][k];return s;};
+  h+=`<tr><th>Total</th>`+
+     `<th>${fmt(cs(0,0))}</th><th>${fmt(cs(1,0))}</th><th>${fmt(cs(2,0))}</th>`+
+     `<th>${fmt(cs(0,1))}</th><th>${fmt(cs(1,1))}</th><th>${fmt(cs(2,1))}</th>`+
+     `<th>${fmt(cs(0,2))}</th><th>${fmt(cs(1,2))}</th></tr></tbody></table>`;
+  document.getElementById('classTableWrap').innerHTML=h;
 }
 
 // ---- Unique (by Mobile) tab -------------------------------------------
