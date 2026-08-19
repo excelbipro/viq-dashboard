@@ -107,6 +107,8 @@
       <select id="rbhSel"></select></div>
     <div class="ctl"><label>Study Center</label>
       <select id="centerSel"></select></div>
+    <div class="ctl"><label>Test Type</label>
+      <select id="testTypeSel"></select></div>
     <div class="ctl"><label>Day-wise measure</label>
       <div class="seg" id="modeSeg">
         <button data-m="daily" class="on">Daily</button>
@@ -198,8 +200,8 @@
 <script>
 function showErr(t){var e=document.getElementById('errbar'); if(e){e.style.display='block'; e.textContent='⚠ '+t;}}
 window.onerror=function(msg,src,ln,col,err){showErr(msg+(ln?(' :'+ln):'')+(err&&err.stack?('\n'+err.stack):'')); return false;};
-const MODEL = {"years":["2024","2025","2026"],"regions":["Closed"],"centers":["Closed"],"regionOfCenter":{"Closed":0},"rbhs":["ONCR"],"rbhOfCenter":[0],"day1":{"2024":"2024-07-16","2025":null,"2026":null},"maxDay":96,"curDay":96,"classes":["6","7","8","9","10","11E","11M","12E","12M"],"classRows":[[0,0,0,2,0.0,213.0,213.0],[0,0,0,1,0.0,20.0,20.0],[0,0,0,5,3.0,133.0,133.0],[0,0,0,7,0.0,182.0,182.0],[0,0,0,8,0.0,216.0,216.0],[0,0,0,4,1.0,237.0,237.0],[0,0,0,6,0.0,86.0,86.0],[0,0,0,3,1.0,122.0,122.0],[0,0,0,0,0.0,26.0,26.0]],"blankClass":[0,0,0],"ff2026":[],"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,0,0,55,9.0],[0,0,0,42,2.0],[0,0,0,94,6.0],[0,0,0,16,162.0],[0,0,0,5,9.0],[0,0,0,7,1.0],[0,0,0,8,6.0],[0,0,0,10,25.0],[0,0,0,11,8.0],[0,0,0,12,78.0],[0,0,0,13,44.0],[0,0,0,14,110.0],[0,0,0,15,106.0],[0,0,0,31,24.0],[0,0,0,33,240.0],[0,0,0,34,8.0],[0,0,0,35,25.0],[0,0,0,44,4.0],[0,0,0,49,69.0],[0,0,0,53,3.0],[0,0,0,57,7.0],[0,0,0,59,7.0],[0,0,0,71,4.0],[0,0,0,80,95.0],[0,0,0,9,6.0],[0,0,0,18,2.0],[0,0,0,32,8.0],[0,0,0,51,3.0],[0,0,0,82,3.0],[0,0,0,3,5.0],[0,0,0,4,0.0],[0,0,0,6,5.0],[0,0,0,37,13.0],[0,0,0,38,3.0],[0,0,0,40,3.0],[0,0,0,41,3.0],[0,0,0,46,1.0],[0,0,0,47,6.0],[0,0,0,48,4.0],[0,0,0,50,1.0],[0,0,0,54,6.0],[0,0,0,56,5.0],[0,0,0,60,5.0],[0,0,0,61,7.0],[0,0,0,62,4.0],[0,0,0,66,5.0],[0,0,0,67,2.0],[0,0,0,70,3.0],[0,0,0,73,6.0],[0,0,0,74,3.0],[0,0,0,76,1.0],[0,0,0,77,1.0],[0,0,0,78,3.0],[0,0,0,83,3.0],[0,0,0,86,1.0],[0,0,0,87,4.0],[0,0,0,90,4.0],[0,0,0,95,5.0],[0,0,0,96,5.0],[0,0,0,28,1.0],[0,0,0,43,2.0],[0,0,0,52,2.0],[0,0,0,58,3.0],[0,0,0,69,6.0],[0,0,0,89,2.0],[0,0,0,26,1.0],[0,0,0,75,1.0],[0,0,0,1,1.0],[0,0,0,17,2.0],[0,0,0,29,1.0],[0,0,0,39,2.0],[0,0,0,64,1.0],[0,0,0,63,2.0],[0,0,0,68,4.0],[0,0,0,81,2.0],[0,0,0,85,1.0],[0,0,0,91,2.0],[0,0,0,21,1.0],[0,0,0,25,1.0],[0,0,0,92,1.0],[0,0,0,2,1.0],[0,0,0,84,1.0],[0,0,0,19,2.0],[0,0,0,65,1.0]],"pmRows":[[0,0,0,1,201.0],[0,0,0,0,1034.0]],"rtRows":[[0,0,0,0,838.0],[0,0,0,2,397.0]],"metRows":[[0,0,0,1235.0,394.0,259.0,3.0]],"uniCenter":[[0,0,0,1231]],"uniRegion":[[0,0,1231]],"uniYear":[1231,0,0],"rbhName":"ONCR"};
-const GEN = "2026-08-19 06:46";
+const MODEL = {"years":["2024","2025","2026"],"regions":["Closed"],"centers":["Closed"],"regionOfCenter":{"Closed":0},"rbhs":["ONCR"],"rbhOfCenter":[0],"day1":{"2024":"2024-07-16","2025":null,"2026":null},"maxDay":96,"curDay":96,"classes":["6","7","8","9","10","11E","11M","12E","12M"],"classRows":[[0,0,0,2,2,0.0,213.0,213.0],[0,0,0,1,2,0.0,20.0,20.0],[0,0,0,5,2,3.0,133.0,133.0],[0,0,0,7,2,0.0,182.0,182.0],[0,0,0,8,2,0.0,216.0,216.0],[0,0,0,4,2,1.0,237.0,237.0],[0,0,0,6,2,0.0,86.0,86.0],[0,0,0,3,2,1.0,122.0,122.0],[0,0,0,0,2,0.0,26.0,26.0]],"blankClass":[0,0,0],"ff2026":[],"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,0,0,2,55,9.0],[0,0,0,2,42,2.0],[0,0,0,2,94,6.0],[0,0,0,2,16,162.0],[0,0,0,2,5,9.0],[0,0,0,2,7,1.0],[0,0,0,2,8,6.0],[0,0,0,2,10,25.0],[0,0,0,2,11,8.0],[0,0,0,2,12,78.0],[0,0,0,2,13,44.0],[0,0,0,2,14,110.0],[0,0,0,2,15,106.0],[0,0,0,2,31,24.0],[0,0,0,2,33,240.0],[0,0,0,2,34,8.0],[0,0,0,2,35,25.0],[0,0,0,2,44,4.0],[0,0,0,2,49,69.0],[0,0,0,2,53,3.0],[0,0,0,2,57,7.0],[0,0,0,2,59,7.0],[0,0,0,2,71,4.0],[0,0,0,2,80,95.0],[0,0,0,2,9,6.0],[0,0,0,2,18,2.0],[0,0,0,2,32,8.0],[0,0,0,2,51,3.0],[0,0,0,2,82,3.0],[0,0,0,2,3,5.0],[0,0,0,2,4,0.0],[0,0,0,2,6,5.0],[0,0,0,2,37,13.0],[0,0,0,2,38,3.0],[0,0,0,2,40,3.0],[0,0,0,2,41,3.0],[0,0,0,2,46,1.0],[0,0,0,2,47,6.0],[0,0,0,2,48,4.0],[0,0,0,2,50,1.0],[0,0,0,2,54,6.0],[0,0,0,2,56,5.0],[0,0,0,2,60,5.0],[0,0,0,2,61,7.0],[0,0,0,2,62,4.0],[0,0,0,2,66,5.0],[0,0,0,2,67,2.0],[0,0,0,2,70,3.0],[0,0,0,2,73,6.0],[0,0,0,2,74,3.0],[0,0,0,2,76,1.0],[0,0,0,2,77,1.0],[0,0,0,2,78,3.0],[0,0,0,2,83,3.0],[0,0,0,2,86,1.0],[0,0,0,2,87,4.0],[0,0,0,2,90,4.0],[0,0,0,2,95,5.0],[0,0,0,2,96,5.0],[0,0,0,2,28,1.0],[0,0,0,2,43,2.0],[0,0,0,2,52,2.0],[0,0,0,2,58,3.0],[0,0,0,2,69,6.0],[0,0,0,2,89,2.0],[0,0,0,2,26,1.0],[0,0,0,2,75,1.0],[0,0,0,2,1,1.0],[0,0,0,2,17,2.0],[0,0,0,2,29,1.0],[0,0,0,2,39,2.0],[0,0,0,2,64,1.0],[0,0,0,2,63,2.0],[0,0,0,2,68,4.0],[0,0,0,2,81,2.0],[0,0,0,2,85,1.0],[0,0,0,2,91,2.0],[0,0,0,2,21,1.0],[0,0,0,2,25,1.0],[0,0,0,2,92,1.0],[0,0,0,2,2,1.0],[0,0,0,2,84,1.0],[0,0,0,2,19,2.0],[0,0,0,2,65,1.0]],"pmRows":[[0,0,0,2,1,201.0],[0,0,0,2,0,1034.0]],"rtRows":[[0,0,0,2,0,838.0],[0,0,0,2,2,397.0]],"metRows":[[0,0,0,2,1235.0,394.0,259.0,3.0]],"uniCenter":[[0,0,0,1231]],"uniRegion":[[0,0,1231]],"uniYear":[1231,0,0],"uniCenterTT":[[0,0,0,2,1231]],"testTypes":["Insta VIQ","VIQ","(No Test Type)"],"rbhName":"ONCR"};
+const GEN = "2026-08-19 15:05";
 function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
 const YVAR={0:'--y2024',1:'--y2025',2:'--y2026'};
 function yc(i){return getVar(YVAR[i]);}
@@ -214,7 +216,7 @@ function ddate(iso,add){ if(!iso) return ''; var p=(''+iso).split('-');
   var d=new Date(+p[0], (+p[1])-1, +p[2]); d.setDate(d.getDate()+(add||0));
   var day=d.getDate(); return (day<10?'0':'')+day+' '+MON[d.getMonth()]; }
 
-let region = -1, center = -1, rbh = -1, mode = 'daily', dayView = 'chart', classView = 'chart';
+let region = -1, center = -1, rbh = -1, testType = -1, mode = 'daily', dayView = 'chart', classView = 'chart';
 let blinkDay = true;   // 'By Day' figure blinks for the first 20s (see timer below)
 
 // ---- floating tooltip (Power BI style)
@@ -232,6 +234,11 @@ document.getElementById('genTag').textContent = 'generated ' + GEN;
 const regionSel = document.getElementById('regionSel');
 const centerSel = document.getElementById('centerSel');
 const rbhSel = document.getElementById('rbhSel');
+const testTypeSel = document.getElementById('testTypeSel');
+function fillTestType(){
+  testTypeSel.innerHTML = '<option value="-1">All Test Types</option>' +
+    MODEL.testTypes.map((t,i)=>`<option value="${i}">${t}</option>`).join('');
+}
 function fillRegion(){
   regionSel.innerHTML = '<option value="-1">All Regions</option>' +
     MODEL.regions.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
@@ -250,10 +257,11 @@ function fillCenter(){
   centerSel.innerHTML = opts;
   center = -1;
 }
-fillRegion(); fillRbh(); fillCenter();
+fillRegion(); fillRbh(); fillCenter(); fillTestType();
 regionSel.onchange = e => { region = +e.target.value; fillCenter(); render(); };
 rbhSel.onchange = e => { rbh = +e.target.value; fillCenter(); render(); };
 centerSel.onchange = e => { center = +e.target.value; render(); };
+testTypeSel.onchange = e => { testType = +e.target.value; render(); };
 
 // ---- per-RBH page: hide Region + RBH dropdowns, show the RBH name (blinks ~10s)
 if(MODEL.rbhName){
@@ -290,30 +298,29 @@ function switchTab(t){ var cmp=(t==='cmp');
 
 // ---- filtering helpers
 function match(r,c){ return (region===-1||r===region) && (center===-1||c===center) && (rbh===-1||MODEL.rbhOfCenter[c]===rbh); }
+function mt(t){ return testType===-1 || t===testType; }   // test-type filter
 
 // ---- aggregate current scope
 function dayData(){
   const per = [ {}, {}, {} ];        // year -> {day:val}
-  for(const [y,r,c,d,v] of MODEL.dayRows){ if(match(r,c)) per[y][d]=(per[y][d]||0)+v; }
+  for(const [y,r,c,t,d,v] of MODEL.dayRows){ if(match(r,c)&&mt(t)) per[y][d]=(per[y][d]||0)+v; }
   return per;
 }
 function catData(rows, ncats){
   const per = [ Array(ncats).fill(0), Array(ncats).fill(0), Array(ncats).fill(0) ];
-  for(const [y,r,c,k,v] of rows){ if(match(r,c)) per[y][k]+=v; }
+  for(const [y,r,c,t,k,v] of rows){ if(match(r,c)&&mt(t)) per[y][k]+=v; }
   return per;
 }
 function metData(){
   const per = [ [0,0,0,0],[0,0,0,0],[0,0,0,0] ];
-  for(const [y,r,c,reg,att,sel,adm] of MODEL.metRows){
-    if(match(r,c)){ per[y][0]+=reg; per[y][1]+=att; per[y][2]+=sel; per[y][3]+=adm; }
+  for(const [y,r,c,t,reg,att,sel,adm] of MODEL.metRows){
+    if(match(r,c)&&mt(t)){ per[y][0]+=reg; per[y][1]+=att; per[y][2]+=sel; per[y][3]+=adm; }
   }
   return per;
 }
 function cumArrays(dd,maxDay){ const cum=[[],[],[]];
   for(let y=0;y<3;y++){ let s=0; for(let d=1;d<=maxDay;d++){ s+=(dd[y][d]||0); cum[y][d]=s; } } return cum; }
-function currentDay2026(){ let cur=0;
-  for(const [y,r,c,d,v] of MODEL.dayRows){ if(y===2 && match(r,c) && d>cur) cur=d; }
-  return cur || MODEL.maxDay; }
+function currentDay2026(){ return MODEL.curDay; }   // kept for compatibility; as-on day is global
 
 // ---- tiny SVG chart lib -------------------------------------------------
 let DG=null;   // day-chart geometry for hover
@@ -436,11 +443,11 @@ function render(){
     return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}${gtot}</div></div>`;
   }).join('');
   // ---- 2026 "2nd Page Form fill-up" = filled father_phone (scope-aware)
-  let ff=0; for(const [r,c,nn] of MODEL.ff2026){ if(match(r,c)) ff+=nn; }
+  let ff=0; for(const [r,c,t,nn] of MODEL.ff2026){ if(match(r,c)&&mt(t)) ff+=nn; }
   document.getElementById('ffCallout').innerHTML =
     '<div class="lbl">2nd Page Form fill-up · 2026</div><div class="val">'+fmt(ff)+'</div>';
 
-  const scope = (region===-1?'All Regions':MODEL.regions[region]) + (rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh]) + (center===-1?'':' › '+MODEL.centers[center]);
+  const scope = (region===-1?'All Regions':MODEL.regions[region]) + (rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh]) + (testType===-1?'':' · Test: '+MODEL.testTypes[testType]) + (center===-1?'':' › '+MODEL.centers[center]);
   document.getElementById('dayHint').textContent =
     'Scope: '+scope+' · '+(mode==='cum'?'Cumulative':'Daily')+' · dashed marker = Day '+cur+' (2026 latest)';
 
@@ -475,8 +482,8 @@ function classData(){
   const nc = MODEL.classes.length;
   const mk = ()=>[Array(nc).fill(0),Array(nc).fill(0),Array(nc).fill(0)];   // [year][classIdx]
   const P = [mk(), mk(), mk()];   // P[metric][year][classIdx]  metric 0=dayTotal 1=tillDate 2=grand
-  for(const [y,r,c,k,dt,td,gr] of MODEL.classRows){
-    if(match(r,c)){ P[0][y][k]+=dt; P[1][y][k]+=td; P[2][y][k]+=gr; }
+  for(const [y,r,c,k,t,dt,td,gr] of MODEL.classRows){
+    if(match(r,c)&&mt(t)){ P[0][y][k]+=dt; P[1][y][k]+=td; P[2][y][k]+=gr; }
   }
   return P;
 }
@@ -509,6 +516,17 @@ function renderClass(){
 
 // ---- Unique (by Mobile) tab -------------------------------------------
 function uniScopeVal(y){
+  if(testType!==-1){   // sum per (center, test-type) distinct over matching scope
+    let sum=0;
+    for(const [yy,r,c,t,n] of MODEL.uniCenterTT){
+      if(yy!==y || t!==testType) continue;
+      if(region!==-1 && r!==region) continue;
+      if(center!==-1 && c!==center) continue;
+      if(rbh!==-1 && MODEL.rbhOfCenter[c]!==rbh) continue;
+      sum+=n;
+    }
+    return sum;
+  }
   if(rbh!==-1){   // sum per-center distinct over centers matching the RBH (+ region/center filter)
     let sum=0;
     for(const row of MODEL.uniCenter){
@@ -524,7 +542,7 @@ function uniScopeVal(y){
 function renderUnique(){
   const u=[uniScopeVal(0),uniScopeVal(1),uniScopeVal(2)];
   const names=MODEL.years;
-  const scope=(region===-1?'All Regions':MODEL.regions[region])+(rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh])+(center===-1?'':' › '+MODEL.centers[center]);
+  const scope=(region===-1?'All Regions':MODEL.regions[region])+(rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh])+(testType===-1?'':' · Test: '+MODEL.testTypes[testType])+(center===-1?'':' › '+MODEL.centers[center]);
   document.getElementById('uniHint').innerHTML='Unique students by mobile number · <b>Scope: '+scope+'</b> · '+
     '2024/2025 = distinct phones with Reg Count ≥ 1 · 2026 = distinct phones';
   document.getElementById('uniKpis').innerHTML = names.map((n,i)=>{
