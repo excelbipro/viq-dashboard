@@ -95,8 +95,31 @@
 <body>
 <div class="wrap">
   <h1>VIQ Registration Comparison Dashboard</h1>
-  <div class="sub">2024 vs 2025 vs 2026 &nbsp;|&nbsp; Measure: 2024/2025 = sum of Reg Count, 2026 = row count
-     <span class="tag" id="genTag"></span></div>
+  <div class="sub" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <span>2024 vs 2025 vs 2026 &nbsp;|&nbsp; Measure: 2024/2025 = sum of Reg Count, 2026 = row count
+      <span class="tag" id="genTag"></span></span>
+    <button id="refreshBtn" onclick="runPipeline()" style="
+      display:inline-flex;align-items:center;gap:8px;
+      background:#38d39f;color:#0f1420;border:none;border-radius:8px;
+      padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;
+      box-shadow:0 2px 8px rgba(56,211,159,.35);transition:opacity .2s;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <span id="refreshLabel">Refresh Data</span>
+    </button>
+  </div>
+
+  <!-- pipeline status panel -->
+  <div id="pipelinePanel" style="display:none;background:var(--panel);border:1px solid var(--line);
+       border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span id="pipelineStatusDot" style="width:10px;height:10px;border-radius:50%;background:#f4a259;display:inline-block;"></span>
+      <b id="pipelineStatusText" style="font-size:13px;">Running…</b>
+      <span id="pipelineLastRun" style="font-size:11px;color:var(--muted);margin-left:auto;"></span>
+    </div>
+    <div id="pipelineLog" style="background:var(--panel2);border-radius:8px;padding:10px 12px;
+         font-family:monospace;font-size:12px;color:var(--ink);max-height:200px;overflow-y:auto;
+         white-space:pre-wrap;word-break:break-all;"></div>
+  </div>
 
   <div class="rbhbanner" id="rbhBanner" style="display:none"></div>
 
@@ -567,6 +590,102 @@ function renderUnique(){
 }
 try { render(); } catch(err){ showErr((err&&err.message?err.message:err)+'\n'+(err&&err.stack?err.stack:'')); }
 setTimeout(function(){ blinkDay=false; try{ render(); }catch(e){} }, 20000);   // stop 'By Day' blink after 20s
+</script>
+
+<script>
+// ── Pipeline Refresh ──────────────────────────────────────────
+const SERVER = "https://spoof-wow-genetics.ngrok-free.dev";
+let pollTimer = null;
+
+function setBtn(label, disabled, color){
+  var btn = document.getElementById("refreshBtn");
+  var lbl = document.getElementById("refreshLabel");
+  lbl.textContent = label;
+  btn.disabled = disabled;
+  btn.style.opacity = disabled ? "0.6" : "1";
+  btn.style.cursor  = disabled ? "not-allowed" : "pointer";
+  if(color) btn.style.background = color;
+}
+
+function updatePanel(data){
+  var panel  = document.getElementById("pipelinePanel");
+  var dot    = document.getElementById("pipelineStatusDot");
+  var txt    = document.getElementById("pipelineStatusText");
+  var logEl  = document.getElementById("pipelineLog");
+  var lastEl = document.getElementById("pipelineLastRun");
+
+  panel.style.display = "block";
+
+  if(data.running){
+    dot.style.background = "#f4a259";
+    txt.textContent = "Running pipeline…";
+    setBtn("Running…", true, "#f4a259");
+  } else if(data.last_status === "success"){
+    dot.style.background = "#38d39f";
+    txt.textContent = "Completed successfully";
+    setBtn("Refresh Data", false, "#38d39f");
+  } else if(data.last_status === "error"){
+    dot.style.background = "#e05555";
+    txt.textContent = "Pipeline failed — check log below";
+    setBtn("Refresh Data", false, "#e05555");
+  } else {
+    dot.style.background = "#94a1bd";
+    txt.textContent = "Ready";
+  }
+
+  if(data.last_run) lastEl.textContent = "Last run: " + data.last_run;
+  if(data.log && data.log.length){
+    logEl.textContent = data.log.join("\n");
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+}
+
+function pollStatus(){
+  fetch(SERVER + "/status")
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      updatePanel(data);
+      if(data.running){
+        pollTimer = setTimeout(pollStatus, 2000);
+      } else {
+        clearTimeout(pollTimer);
+        pollTimer = null;
+      }
+    })
+    .catch(function(){
+      // server not responding — ignore silently
+    });
+}
+
+function runPipeline(){
+  fetch(SERVER + "/run", { method:"POST" })
+    .then(function(r){
+      if(r.status === 409){ alert("Pipeline is already running. Please wait."); return; }
+      return r.json();
+    })
+    .then(function(data){
+      if(!data) return;
+      document.getElementById("pipelinePanel").style.display = "block";
+      document.getElementById("pipelineLog").textContent = "";
+      setBtn("Running…", true, "#f4a259");
+      if(pollTimer) clearTimeout(pollTimer);
+      pollTimer = setTimeout(pollStatus, 1500);
+    })
+    .catch(function(){
+      alert("Cannot connect to the local pipeline server.\n\nMake sure pipeline_server.py is running on your computer.");
+    });
+}
+
+// check server status on page load
+setTimeout(function(){
+  fetch(SERVER + "/ping")
+    .then(function(r){ return r.json(); })
+    .then(function(){ /* server is up — do nothing */ })
+    .catch(function(){
+      document.getElementById("refreshBtn").title =
+        "Server offline — run pipeline_server.py on your computer first";
+    });
+}, 1000);
 </script>
 </body>
 </html>
