@@ -215,7 +215,7 @@
 function showErr(t){var e=document.getElementById('errbar'); if(e){e.style.display='block'; e.textContent='⚠ '+t;}}
 window.onerror=function(msg,src,ln,col,err){showErr(msg+(ln?(' :'+ln):'')+(err&&err.stack?('\n'+err.stack):'')); return false;};
 const MODEL = {"years":["2024","2025","2026"],"regions":["01_Delhi Ncr","03_Franchise"],"centers":["Ghaziabad","Ghaziabad (Raj Nagar Extention)"],"regionOfCenter":{"Ghaziabad":1,"Ghaziabad (Raj Nagar Extention)":0},"rbhs":["Aditya Goswami"],"rbhOfCenter":[0,0],"day1":{"2024":"2024-07-18","2025":"2025-07-16","2026":"2026-07-14"},"maxDay":103,"curDay":34,"classes":["6","7","8","9","10","11E","11M","12E","12M","13E","13M"],"classRows":[[0,1,0,2,1,0.0,25.0,31.0],[0,1,0,4,1,0.0,256.0,288.0],[0,1,0,3,1,0.0,54.0,245.0],[0,1,0,5,1,0.0,243.0,339.0],[0,1,0,6,1,0.0,15.0,34.0],[0,1,0,7,1,0.0,32.0,40.0],[0,1,0,8,1,0.0,15.0,16.0],[0,1,0,1,1,0.0,1.0,4.0],[0,1,0,0,1,0.0,11.0,15.0],[1,0,0,4,1,0.0,45.0,533.0],[1,0,0,5,1,0.0,14.0,485.0],[1,0,0,3,1,0.0,12.0,349.0],[1,0,0,7,1,0.0,23.0,171.0],[1,0,0,8,1,0.0,12.0,72.0],[1,0,0,6,1,0.0,5.0,20.0],[1,0,0,2,1,0.0,22.0,34.0],[1,0,0,0,1,0.0,28.0,31.0],[1,0,0,1,1,0.0,6.0,9.0],[1,0,0,10,1,0.0,5.0,7.0],[1,0,0,9,1,0.0,4.0,5.0],[1,0,1,7,1,0.0,7.0,19.0],[1,0,1,3,1,0.0,18.0,52.0],[1,0,1,4,1,0.0,12.0,60.0],[1,0,1,5,1,1.0,16.0,61.0],[1,0,1,8,1,0.0,3.0,11.0],[1,0,1,10,1,0.0,3.0,5.0],[1,0,1,9,1,0.0,0.0,2.0],[1,0,1,6,1,0.0,3.0,6.0],[1,0,1,0,1,0.0,12.0,13.0],[1,0,1,2,1,0.0,8.0,9.0],[1,0,1,1,1,0.0,1.0,1.0],[2,0,0,5,1,0.0,15.0,15.0],[2,0,1,3,1,0.0,3.0,3.0],[2,0,1,9,1,0.0,4.0,4.0],[2,0,0,7,1,0.0,16.0,16.0],[2,0,0,3,1,3.0,12.0,12.0],[2,0,0,9,1,1.0,10.0,10.0],[2,0,1,4,1,2.0,10.0,10.0],[2,0,0,4,1,3.0,25.0,25.0],[2,0,0,6,1,0.0,5.0,5.0],[2,0,1,5,1,0.0,9.0,9.0],[2,0,1,8,1,0.0,4.0,4.0],[2,0,1,7,1,0.0,6.0,6.0],[2,0,1,2,1,0.0,3.0,3.0],[2,0,0,10,1,0.0,9.0,9.0],[2,0,0,0,1,0.0,8.0,8.0],[2,0,0,8,1,0.0,7.0,7.0],[2,0,1,1,1,0.0,3.0,3.0],[2,0,1,6,1,0.0,1.0,1.0],[2,0,1,0,1,0.0,6.0,6.0],[2,0,0,2,1,0.0,3.0,3.0],[2,0,0,1,1,0.0,1.0,1.0]],"blankClass":[0,0,0],"ff2026":[[0,1,1,24],[0,0,1,41]],"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[0,1,0,1,52,2.0],[0,1,0,1,73,3.0],[0,1,0,1,32,19.0],[0,1,0,1,76,2.0],[0,1,0,1,33,5.0],[0,1,0,1,85,3.0],[0,1,0,1,26,383.0],[0,1,0,1,3,2.0],[0,1,0,1,53,5.0],[0,1,0,1,55,4.0],[0,1,0,1,87,6.0],[0,1,0,1,5,4.0],[0,1,0,1,70,2.0],[0,1,0,1,31,15.0],[0,1,0,1,80,5.0],[0,1,0,1,88,3.0],[0,1,0,1,46,6.0],[0,1,0,1,27,1.0],[0,1,0,1,74,3.0],[0,1,0,1,90,4.0],[0,1,0,1,57,7.0],[0,1,0,1,82,2.0],[0,1,0,1,4,4.0],[0,1,0,1,25,1.0],[0,1,0,1,72,2.0],[0,1,0,1,77,5.0],[0,1,0,1,45,2.0],[0,1,0,1,92,2.0],[0,1,0,1,40,3.0],[0,1,0,1,78,4.0],[0,1,0,1,84,1.0],[0,1,0,1,7,10.0],[0,1,0,1,8,11.0],[0,1,0,1,10,12.0],[0,1,0,1,11,13.0],[0,1,0,1,12,11.0],[0,1,0,1,14,86.0],[0,1,0,1,29,6.0],[0,1,0,1,30,9.0],[0,1,0,1,41,171.0],[0,1,0,1,43,9.0],[0,1,0,1,59,3.0],[0,1,0,1,79,23.0],[0,1,0,1,13,19.0],[0,1,0,1,15,19.0],[0,1,0,1,1,11.0],[0,1,0,1,2,1.0],[0,1,0,1,9,3.0],[0,1,0,1,17,1.0],[0,1,0,1,24,4.0],[0,1,0,1,28,1.0],[0,1,0,1,37,2.0],[0,1,0,1,44,2.0],[0,1,0,1,47,3.0],[0,1,0,1,48,1.0],[0,1,0,1,49,2.0],[0,1,0,1,54,14.0],[0,1,0,1,58,4.0],[0,1,0,1,61,2.0],[0,1,0,1,62,2.0],[0,1,0,1,63,1.0],[0,1,0,1,64,2.0],[0,1,0,1,60,2.0],[0,1,0,1,68,2.0],[0,1,0,1,69,3.0],[0,1,0,1,71,1.0],[0,1,0,1,81,6.0],[0,1,0,1,86,1.0],[0,1,0,1,89,1.0],[0,1,0,1,91,1.0],[0,1,0,1,93,4.0],[0,1,0,1,94,4.0],[0,1,0,1,19,1.0],[0,1,0,1,75,3.0],[0,1,0,1,51,4.0],[0,1,0,1,50,1.0],[0,1,0,1,56,2.0],[0,1,0,1,66,1.0],[0,1,0,1,67,4.0],[0,1,0,1,65,1.0],[0,1,0,1,38,2.0],[1,0,0,1,38,1365.0],[1,0,0,1,53,9.0],[1,0,0,1,59,41.0],[1,0,0,1,60,8.0],[1,0,0,1,31,19.0],[1,0,0,1,29,16.0],[1,0,0,1,13,3.0],[1,0,0,1,23,20.0],[1,0,0,1,28,10.0],[1,0,0,1,43,2.0],[1,0,0,1,68,1.0],[1,0,0,1,77,3.0],[1,0,0,1,48,2.0],[1,0,0,1,19,4.0],[1,0,0,1,81,3.0],[1,0,0,1,82,5.0],[1,0,0,1,49,1.0],[1,0,0,1,74,4.0],[1,0,0,1,26,9.0],[1,0,0,1,39,1.0],[1,0,0,1,47,2.0],[1,0,0,1,27,13.0],[1,0,0,1,22,13.0],[1,0,0,1,3,1.0],[1,0,0,1,70,1.0],[1,0,0,1,50,2.0],[1,0,0,1,101,2.0],[1,0,0,1,102,1.0],[1,0,0,1,51,1.0],[1,0,0,1,66,3.0],[1,0,0,1,80,1.0],[1,0,0,1,84,1.0],[1,0,0,1,65,2.0],[1,0,0,1,89,1.0],[1,0,0,1,99,2.0],[1,0,0,1,41,44.0],[1,0,0,1,44,1.0],[1,0,0,1,88,5.0],[1,0,0,1,21,7.0],[1,0,0,1,86,1.0],[1,0,0,1,92,1.0],[1,0,0,1,100,1.0],[1,0,0,1,8,1.0],[1,0,0,1,30,21.0],[1,0,0,1,17,2.0],[1,0,0,1,56,1.0],[1,0,0,1,16,3.0],[1,0,0,1,12,2.0],[1,0,0,1,46,1.0],[1,0,0,1,18,5.0],[1,0,0,1,20,3.0],[1,0,0,1,52,2.0],[1,0,0,1,87,1.0],[1,0,0,1,1,2.0],[1,0,0,1,6,1.0],[1,0,0,1,25,9.0],[1,0,0,1,63,3.0],[1,0,0,1,93,1.0],[1,0,0,1,15,1.0],[1,0,0,1,24,9.0],[1,0,0,1,32,2.0],[1,0,0,1,61,1.0],[1,0,0,1,62,1.0],[1,0,0,1,85,1.0],[1,0,0,1,35,2.0],[1,0,0,1,71,3.0],[1,0,0,1,40,1.0],[1,0,0,1,78,1.0],[1,0,0,1,45,1.0],[1,0,0,1,64,1.0],[1,0,0,1,72,1.0],[1,0,0,1,36,1.0],[1,0,1,1,38,96.0],[1,0,1,1,41,6.0],[1,0,1,1,59,6.0],[1,0,1,1,53,1.0],[1,0,1,1,89,6.0],[1,0,1,1,82,2.0],[1,0,1,1,88,4.0],[1,0,1,1,86,1.0],[1,0,1,1,11,2.0],[1,0,1,1,30,6.0],[1,0,1,1,26,6.0],[1,0,1,1,47,2.0],[1,0,1,1,60,2.0],[1,0,1,1,28,8.0],[1,0,1,1,34,1.0],[1,0,1,1,43,1.0],[1,0,1,1,61,4.0],[1,0,1,1,29,7.0],[1,0,1,1,93,1.0],[1,0,1,1,71,1.0],[1,0,1,1,6,3.0],[1,0,1,1,20,2.0],[1,0,1,1,80,1.0],[1,0,1,1,19,4.0],[1,0,1,1,78,1.0],[1,0,1,1,62,1.0],[1,0,1,1,40,3.0],[1,0,1,1,23,7.0],[1,0,1,1,72,2.0],[1,0,1,1,14,2.0],[1,0,1,1,12,3.0],[1,0,1,1,57,1.0],[1,0,1,1,22,7.0],[1,0,1,1,90,1.0],[1,0,1,1,9,1.0],[1,0,1,1,45,1.0],[1,0,1,1,31,3.0],[1,0,1,1,76,1.0],[1,0,1,1,27,1.0],[1,0,1,1,39,2.0],[1,0,1,1,25,2.0],[1,0,1,1,42,1.0],[1,0,1,1,24,2.0],[1,0,1,1,21,4.0],[1,0,1,1,13,3.0],[1,0,1,1,15,1.0],[1,0,1,1,17,3.0],[1,0,1,1,18,2.0],[1,0,1,1,16,1.0],[1,0,1,1,36,3.0],[1,0,1,1,103,1.0],[1,0,1,1,49,1.0],[1,0,1,1,97,1.0],[1,0,1,1,95,1.0],[1,0,1,1,7,2.0],[1,0,1,1,48,1.0],[2,0,0,1,1,1.0],[2,0,0,1,2,3.0],[2,0,0,1,3,2.0],[2,0,0,1,4,2.0],[2,0,0,1,5,6.0],[2,0,0,1,6,3.0],[2,0,0,1,7,2.0],[2,0,0,1,8,1.0],[2,0,0,1,9,7.0],[2,0,0,1,10,5.0],[2,0,0,1,11,2.0],[2,0,0,1,12,1.0],[2,0,0,1,13,12.0],[2,0,0,1,14,5.0],[2,0,0,1,15,20.0],[2,0,0,1,16,12.0],[2,0,0,1,17,8.0],[2,0,0,1,18,3.0],[2,0,0,1,32,1.0],[2,0,0,1,33,4.0],[2,0,0,1,34,7.0],[2,0,0,1,21,1.0],[2,0,0,1,24,1.0],[2,0,0,1,26,1.0],[2,0,0,1,29,1.0],[2,0,1,1,1,2.0],[2,0,1,1,3,1.0],[2,0,1,1,5,5.0],[2,0,1,1,6,4.0],[2,0,1,1,9,1.0],[2,0,1,1,13,8.0],[2,0,1,1,14,1.0],[2,0,1,1,15,9.0],[2,0,1,1,16,4.0],[2,0,1,1,17,3.0],[2,0,1,1,32,2.0],[2,0,1,1,33,2.0],[2,0,1,1,34,2.0],[2,0,1,1,20,1.0],[2,0,1,1,23,2.0],[2,0,1,1,25,1.0],[2,0,1,1,28,1.0]],"pmRows":[[0,1,0,1,1,168.0],[0,1,0,1,0,844.0],[1,0,0,1,0,1642.0],[1,0,0,1,1,74.0],[1,0,1,1,0,195.0],[1,0,1,1,1,44.0],[2,0,0,1,0,107.0],[2,0,0,1,1,4.0],[2,0,1,1,0,44.0],[2,0,1,1,1,5.0]],"rtRows":[[0,1,0,1,0,396.0],[0,1,0,1,2,602.0],[0,1,0,1,1,14.0],[1,0,0,1,2,62.0],[1,0,0,1,0,662.0],[1,0,0,1,3,4.0],[1,0,0,1,1,988.0],[1,0,1,1,2,19.0],[1,0,1,1,0,146.0],[1,0,1,1,3,1.0],[1,0,1,1,1,73.0],[2,0,0,1,0,103.0],[2,0,0,1,3,8.0],[2,0,1,1,3,6.0],[2,0,1,1,0,43.0]],"metRows":[[0,1,0,1,1012.0,360.0,288.0,34.0],[1,0,0,1,1716.0,181.0,138.0,40.0],[1,0,1,1,239.0,84.0,80.0,21.0],[2,0,0,1,0.0,0.0,0.0,0.0],[2,0,1,1,0.0,0.0,0.0,0.0]],"uniCenter":[[0,1,0,1008],[1,0,0,1674],[1,0,1,229],[2,0,0,110],[2,0,1,47]],"uniRegion":[[0,1,1008],[1,0,1896],[2,0,157]],"uniYear":[1008,1896,157],"uniCenterTT":[[0,1,0,1,1008],[1,0,0,1,1674],[1,0,1,1,229],[2,0,0,1,110],[2,0,1,1,47]],"testTypes":["Insta VIQ","VIQ"],"rbhName":"Aditya Goswami"};
-const GEN = "2026-08-19 22:22";
+const GEN = "2026-08-19 22:35";
 function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
 const YVAR={0:'--y2024',1:'--y2025',2:'--y2026'};
 function yc(i){return getVar(YVAR[i]);}
@@ -583,54 +583,120 @@ try { render(); } catch(err){ showErr((err&&err.message?err.message:err)+'\n'+(e
 setTimeout(function(){ blinkDay=false; try{ render(); }catch(e){} }, 20000);
 </script>
 <script>
-var SERVER="https://spoof-wow-genetics.ngrok-free.dev",COOLDOWN_MS=30*60*1000,LS_KEY="viq_last_refresh",pollTimer=null,cooldownTimer=null;
+var SERVER="https://spoof-wow-genetics.ngrok-free.dev",COOLDOWN_MS=30*60*1000,LS_KEY="viq_last_refresh";
+var pollTimer=null,cooldownTimer=null,safetyTimer=null;
+
 function fmtTime(ts){if(!ts)return"";return new Date(ts).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});}
 function getLastRefresh(){return parseInt(localStorage.getItem(LS_KEY)||"0");}
 function saveLastRefresh(ts){localStorage.setItem(LS_KEY,String(ts));}
+
 function applyBtnState(){
-  var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel"),last=getLastRefresh(),remaining=last?Math.max(0,COOLDOWN_MS-(Date.now()-last)):0;
+  var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+  if(!btn)return;
+  var last=getLastRefresh(),remaining=last?Math.max(0,COOLDOWN_MS-(Date.now()-last)):0;
   if(remaining>0){
     var activeAt=fmtTime(last+COOLDOWN_MS);
-    btn.disabled=true;btn.style.opacity="0.55";btn.style.cursor="not-allowed";btn.style.background="#5a6b8c";lbl.textContent="Refresh Data";
+    btn.disabled=true;
+    btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#5a6b8c;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:not-allowed;opacity:1;box-shadow:none;";
+    lbl.textContent="Next refresh at "+activeAt;
     btn.title="Already generated at "+fmtTime(last)+"  |  Active again at "+activeAt;
-    if(cooldownTimer)clearTimeout(cooldownTimer);cooldownTimer=setTimeout(applyBtnState,remaining+200);
+    if(cooldownTimer)clearTimeout(cooldownTimer);
+    cooldownTimer=setTimeout(applyBtnState,remaining+200);
   }else{
-    btn.disabled=false;btn.style.opacity="1";btn.style.cursor="pointer";btn.style.background="#38d39f";lbl.textContent="Refresh Data";
+    btn.disabled=false;
+    btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#38d39f;color:#0f1420;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;opacity:1;box-shadow:0 2px 8px rgba(56,211,159,.35);";
+    lbl.textContent="Refresh Data";
     btn.title=last?"Last run: "+fmtTime(last):"";
   }
 }
+
+function setRunningState(){
+  var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+  if(!btn)return;
+  btn.disabled=true;
+  btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#f4a259;color:#0f1420;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:not-allowed;opacity:1;box-shadow:none;";
+  lbl.textContent="Running…";btn.title="";
+  // safety fallback: if still running after 20 mins, re-enable button
+  if(safetyTimer)clearTimeout(safetyTimer);
+  safetyTimer=setTimeout(function(){applyBtnState();},20*60*1000);
+}
+
 function updatePanel(data){
-  var panel=document.getElementById("pipelinePanel"),dot=document.getElementById("pipelineStatusDot"),txt=document.getElementById("pipelineStatusText"),logEl=document.getElementById("pipelineLog"),lastEl=document.getElementById("pipelineLastRun"),btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+  var panel=document.getElementById("pipelinePanel"),dot=document.getElementById("pipelineStatusDot"),
+      txt=document.getElementById("pipelineStatusText"),logEl=document.getElementById("pipelineLog"),
+      lastEl=document.getElementById("pipelineLastRun");
+  if(!panel)return;
   panel.style.display="block";
   if(data.running){
     dot.style.background="#f4a259";txt.textContent="Running pipeline…";
-    btn.disabled=true;btn.style.opacity="0.55";btn.style.cursor="not-allowed";btn.style.background="#f4a259";btn.title="";lbl.textContent="Running…";
+    setRunningState();
   }else if(data.last_status==="success"){
     dot.style.background="#38d39f";txt.textContent="Completed successfully ✅";
-    saveLastRefresh(Date.now());applyBtnState();
+    if(safetyTimer){clearTimeout(safetyTimer);safetyTimer=null;}
+    saveLastRefresh(Date.now());
+    applyBtnState();
   }else if(data.last_status==="error"){
     dot.style.background="#e05555";txt.textContent="Pipeline failed — check log below ❌";
-    btn.disabled=false;btn.style.opacity="1";btn.style.cursor="pointer";btn.style.background="#e05555";btn.title="";lbl.textContent="Retry";
-  }else{dot.style.background="#94a1bd";txt.textContent="Ready";applyBtnState();}
+    if(safetyTimer){clearTimeout(safetyTimer);safetyTimer=null;}
+    var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+    btn.disabled=false;
+    btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#e05555;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;opacity:1;box-shadow:none;";
+    lbl.textContent="Retry";btn.title="";
+  }else{
+    dot.style.background="#94a1bd";txt.textContent="Ready";
+    applyBtnState();
+  }
   if(data.last_run)lastEl.textContent="Last run: "+data.last_run;
   if(data.log&&data.log.length){logEl.textContent=data.log.join("\n");logEl.scrollTop=logEl.scrollHeight;}
 }
+
 function pollStatus(){
-  fetch(SERVER+"/status").then(function(r){return r.json();}).then(function(data){updatePanel(data);if(data.running){pollTimer=setTimeout(pollStatus,2000);}else{clearTimeout(pollTimer);pollTimer=null;}}).catch(function(){});
+  fetch(SERVER+"/status")
+    .then(function(r){return r.json();})
+    .then(function(data){
+      updatePanel(data);
+      if(data.running){pollTimer=setTimeout(pollStatus,2000);}
+      else{clearTimeout(pollTimer);pollTimer=null;}
+    })
+    .catch(function(){
+      // retry polling in 5 sec if network blip
+      pollTimer=setTimeout(pollStatus,5000);
+    });
 }
+
 function runPipeline(){
   if(document.getElementById("refreshBtn").disabled)return;
-  fetch(SERVER+"/run",{method:"POST"}).then(function(r){if(r.status===409){alert("Pipeline already running. Please wait.");return null;}return r.json();}).then(function(data){
-    if(!data)return;
-    var panel=document.getElementById("pipelinePanel"),logEl=document.getElementById("pipelineLog"),btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
-    panel.style.display="block";logEl.textContent="";
-    btn.disabled=true;btn.style.opacity="0.55";btn.style.cursor="not-allowed";btn.style.background="#f4a259";btn.title="";lbl.textContent="Running…";
-    if(pollTimer)clearTimeout(pollTimer);pollTimer=setTimeout(pollStatus,1500);
-  }).catch(function(){alert("Cannot connect to pipeline server.\n\nMake sure Start_Pipeline_Server.bat and Start_Ngrok.bat are running on your computer.");});
+  setRunningState();
+  document.getElementById("pipelinePanel").style.display="block";
+  document.getElementById("pipelineLog").textContent="⏳ Connecting to pipeline server…";
+  fetch(SERVER+"/run",{method:"POST"})
+    .then(function(r){if(r.status===409){alert("Pipeline already running. Please wait.");applyBtnState();return null;}return r.json();})
+    .then(function(data){
+      if(!data)return;
+      document.getElementById("pipelineLog").textContent="";
+      if(pollTimer)clearTimeout(pollTimer);
+      pollTimer=setTimeout(pollStatus,1500);
+    })
+    .catch(function(){
+      applyBtnState();
+      document.getElementById("pipelineLog").textContent="❌ Cannot connect to pipeline server.\nMake sure Start_Pipeline_Server.bat and Start_Ngrok.bat are running on your computer.";
+    });
 }
+
+// on page load — restore correct button state immediately
 applyBtnState();
+
+// sync with server
 setTimeout(function(){
-  fetch(SERVER+"/status").then(function(r){return r.json();}).then(function(data){updatePanel(data);if(data.running){if(pollTimer)clearTimeout(pollTimer);pollTimer=setTimeout(pollStatus,2000);}}).catch(function(){document.getElementById("refreshBtn").title="Server offline — run Start_Pipeline_Server.bat on your computer first";});
+  fetch(SERVER+"/status")
+    .then(function(r){return r.json();})
+    .then(function(data){
+      updatePanel(data);
+      if(data.running){if(pollTimer)clearTimeout(pollTimer);pollTimer=setTimeout(pollStatus,2000);}
+    })
+    .catch(function(){
+      document.getElementById("refreshBtn").title="Server offline — run Start_Pipeline_Server.bat on your computer first";
+    });
 },800);
 </script>
 </body>
