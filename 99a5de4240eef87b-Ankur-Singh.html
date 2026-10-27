@@ -1,0 +1,828 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VIQ Registration Comparison Dashboard</title>
+<style>
+  :root{
+    --bg:#0f1420; --panel:#171e2e; --panel2:#1e2740; --ink:#e8ecf5; --muted:#94a1bd;
+    --line:#2a3450; --accent:#5b8cff;
+    --y2024:#f4a259; --y2025:#5b8cff; --y2026:#38d39f;
+  }
+  @media (prefers-color-scheme: light){
+    :root{ --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef2fa; --ink:#1a2235; --muted:#5a6b8c;
+           --line:#d9e0ee; }
+  }
+  :root[data-theme="light"]{ --bg:#f4f6fb; --panel:#ffffff; --panel2:#eef2fa; --ink:#1a2235;
+           --muted:#5a6b8c; --line:#d9e0ee; }
+  :root[data-theme="dark"]{ --bg:#0f1420; --panel:#171e2e; --panel2:#1e2740; --ink:#e8ecf5;
+           --muted:#94a1bd; --line:#2a3450; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 60px;}
+  h1{font-size:22px;margin:0 0 2px;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+  .controls{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;
+            background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:18px;}
+  .ctl label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:5px;}
+  select{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;
+         padding:8px 10px;font-size:14px;min-width:210px;}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .seg button{background:var(--panel2);color:var(--muted);border:0;padding:8px 12px;font-size:13px;cursor:pointer;}
+  .seg button.on{background:var(--accent);color:#fff;}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;}
+  .kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .kpi .yr{font-size:12px;color:var(--muted);}
+  .kpi .val{font-size:26px;font-weight:700;margin-top:4px;line-height:1.15;}
+  .kpi.k2024 .val{color:var(--y2024)} .kpi.k2025 .val{color:var(--y2025)} .kpi.k2026 .val{color:var(--y2026)}
+  .kpi .delta{font-size:12px;color:var(--muted);margin-top:2px;}
+  .kpi .valrow{display:flex;gap:20px;flex-wrap:wrap;margin-top:4px;}
+  .kpi .valcol{display:flex;flex-direction:column;}
+  .kpi .valcol .val{margin-top:1px;}
+  .kpi .sublbl{font-size:11px;color:var(--muted);}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:18px;}
+  .card h2{font-size:15px;margin:0 0 4px;}
+  .card .hint{font-size:12px;color:var(--muted);margin-bottom:10px;}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  @media(max-width:820px){.grid2{grid-template-columns:1fr}.kpis{grid-template-columns:1fr}}
+  table{border-collapse:collapse;width:100%;font-size:13px;}
+  th,td{border-bottom:1px solid var(--line);padding:7px 9px;text-align:right;}
+  table.grid th,table.grid td{border:1px solid var(--line);}
+  th:first-child,td:first-child{text-align:left;}
+  th{color:var(--muted);font-weight:600;font-size:12px;}
+  .svgwrap{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  /* explicit width/height attrs + height:auto -> correct aspect ratio on iOS Safari */
+  svg{display:block;width:100%;height:auto;max-width:100%;}
+  .foot{color:var(--muted);font-size:11px;margin-top:24px;text-align:center;}
+  .tag{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 10px;margin-left:6px;}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+  .tabbtn{background:var(--panel2);color:var(--muted);border:1px solid var(--line);border-radius:10px;
+          padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;}
+  .tabbtn.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  #errbar{display:none;background:#7a1f1f;color:#fff;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:14px;
+          font-family:monospace;white-space:pre-wrap;word-break:break-word;}
+  .fulltot{font-size:12px;color:var(--muted);margin:-6px 0 18px;}
+  .ffwrap{display:flex;justify-content:flex-end;margin:-6px 0 18px;}
+  .ffcallout{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--y2026);
+             border-radius:12px;padding:9px 18px;text-align:right;min-width:180px;}
+  .ffcallout .lbl{font-size:12px;color:var(--muted);letter-spacing:.3px;}
+  .ffcallout .val{font-size:24px;font-weight:800;color:var(--y2026);line-height:1.2;}
+  @media(max-width:820px){.ffwrap{justify-content:stretch}.ffcallout{width:100%;text-align:left}}
+  .rbhbanner{font-size:26px;font-weight:800;color:var(--accent);margin:2px 0 16px;letter-spacing:.3px;}
+  .rbhbanner .who{font-size:15px;font-weight:600;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-right:8px;}
+  @keyframes blinkfade{0%,100%{opacity:1}50%{opacity:.15}}
+  .blink{animation:blinkfade .8s ease-in-out infinite;}
+  .blink10{animation:blinkfade .8s ease-in-out 0s 12;}   /* ~10s then stops, ends visible */
+  @media(prefers-reduced-motion:reduce){.blink,.blink10{animation:none}}
+  .tablewrap{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px;}
+  .tablewrap table{font-size:12px;}
+  .tablewrap thead th{position:-webkit-sticky;position:sticky;top:0;background:var(--panel);z-index:1;}
+  .tablewrap tfoot th{position:-webkit-sticky;position:sticky;bottom:0;background:var(--panel);}
+  #dayChart rect[onmousemove],svg rect[onmousemove]{cursor:crosshair;}
+  #tip{position:fixed;z-index:60;pointer-events:none;background:var(--panel);border:1px solid var(--line);
+       border-radius:8px;padding:8px 10px;font-size:12px;color:var(--ink);box-shadow:0 8px 24px rgba(0,0,0,.28);min-width:150px;}
+  #tip .th{font-weight:700;margin-bottom:5px;}
+  #tip .tr{display:flex;align-items:center;gap:6px;margin:2px 0;white-space:nowrap;}
+  #tip .tr b{margin-left:auto;padding-left:14px;}
+  #tip .sw{width:10px;height:10px;border-radius:2px;display:inline-block;flex:0 0 auto;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>VIQ Registration Comparison Dashboard</h1>
+  <div class="sub" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <span>2024 vs 2025 vs 2026 &nbsp;|&nbsp; Measure: 2024/2025 = sum of Reg Count, 2026 = row count
+      <span class="tag" id="genTag"></span></span>
+    <button id="refreshBtn" onclick="runPipeline()" style="display:inline-flex;align-items:center;gap:8px;background:#38d39f;color:#0f1420;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(56,211,159,.35);transition:background .2s,opacity .2s;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <span id="refreshLabel">Refresh Data</span>
+    </button>
+  </div>
+  <div id="pipelinePanel" style="display:none;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+      <span id="pipelineStatusDot" style="width:10px;height:10px;border-radius:50%;background:#94a1bd;display:inline-block;"></span>
+      <b id="pipelineStatusText" style="font-size:13px;">Ready</b>
+      <span id="pipelineLastRun" style="font-size:11px;color:var(--muted);margin-left:auto;"></span>
+    </div>
+    <div id="pipelineLog" style="background:var(--panel2);border-radius:8px;padding:10px 12px;font-family:monospace;font-size:12px;color:var(--ink);max-height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;"></div>
+  </div>
+
+  <div class="rbhbanner" id="rbhBanner" style="display:none"></div>
+
+  <div class="controls">
+    <div class="ctl" id="ctlRegion"><label>Region</label>
+      <select id="regionSel"></select></div>
+    <div class="ctl" id="ctlRbh"><label>RBH</label>
+      <select id="rbhSel"></select></div>
+    <div class="ctl"><label>Study Center</label>
+      <select id="centerSel"></select></div>
+    <div class="ctl"><label>Test Type</label>
+      <select id="testTypeSel"></select></div>
+    <div class="ctl"><label>Day-wise measure</label>
+      <div class="seg" id="modeSeg">
+        <button data-m="daily" class="on">Daily</button>
+        <button data-m="cum">Cumulative</button>
+      </div></div>
+    <div class="ctl"><label>Day-wise display</label>
+      <div class="seg" id="viewSeg">
+        <button data-v="chart" class="on">Chart</button>
+        <button data-v="table">Table</button>
+      </div></div>
+  </div>
+
+  <div id="errbar"></div>
+
+  <div class="tabs">
+    <button id="tabBtnCmp" class="tabbtn on" onclick="switchTab('cmp')">Comparison</button>
+    <button id="tabBtnUni" class="tabbtn" onclick="switchTab('uni')">Unique (by Mobile)</button>
+  </div>
+
+  <div id="tabComparison">
+  <div class="kpis" id="kpis"></div>
+  <div class="ffwrap" style="gap:14px">
+    <div class="ffcallout" id="attCallout"></div>
+    <div class="ffcallout" id="selCallout"></div>
+    <div class="ffcallout" id="ffCallout"></div>
+  </div>
+
+  <div class="card">
+    <h2>Day-wise Registration (Day 1 = earliest registration date of each year)</h2>
+    <div class="hint" id="dayHint"></div>
+    <div class="svgwrap" id="dayChartWrap"><svg id="dayChart" width="1120" height="380" viewBox="0 0 1120 380" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="tablewrap" id="dayTableWrap" style="display:none"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--y2024)"></i>2024</span>
+      <span><i class="dot" style="background:var(--y2025)"></i>2025</span>
+      <span><i class="dot" style="background:var(--y2026)"></i>2026</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Admission Test-wise Registration (2026)</h2>
+    <div class="hint">Count of 2026 registrations by Admission Test for the selected scope.</div>
+    <div class="tablewrap" id="atTableWrap"></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h2>Registration Through</h2>
+      <div class="hint">Registration source category by year</div>
+      <div class="svgwrap"><svg id="rtChart" width="540" height="340" viewBox="0 0 540 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <table id="rtTable"></table>
+    </div>
+    <div class="card">
+      <h2>Payment Mode</h2>
+      <div class="hint">Free vs Paid by year</div>
+      <div class="svgwrap"><svg id="pmChart" width="540" height="340" viewBox="0 0 540 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <table id="pmTable"></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Classwise Registration</h2>
+    <div class="hint" id="classHint"></div>
+    <div class="seg" id="classSeg" style="margin-bottom:12px">
+      <button data-cv="chart" class="on">Chart</button>
+      <button data-cv="table">Table</button>
+    </div>
+    <div class="svgwrap" id="classChartWrap"><svg id="classChart" width="1120" height="400" viewBox="0 0 1120 400" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <div class="tablewrap" id="classTableWrap" style="display:none"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--y2024)"></i>2024</span>
+      <span><i class="dot" style="background:var(--y2025)"></i>2025</span>
+      <span><i class="dot" style="background:var(--y2026)"></i>2026</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Marketing Category (2026)</h2>
+    <div class="hint">2026 registrations by Marketing Category for the selected scope.</div>
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;">
+        <div class="tablewrap" id="mktTableWrap"></div>
+      </div>
+      <div style="flex:0 0 auto;display:flex;justify-content:center;">
+        <svg id="mktPieChart" width="460" height="400" viewBox="0 0 460 400" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Reg / Attendance / Selection / Admission</h2>
+    <div class="hint">Totals for the selected scope. <b>2026 Attendance</b> = students who appeared (matched in the result file); <b>2026 Selection</b> = status "Selected". 2026 has no Admission data; Reg = row count.</div>
+    <div class="svgwrap"><svg id="sumChart" width="720" height="320" viewBox="0 0 720 320" preserveAspectRatio="xMidYMid meet"></svg></div>
+    <table id="sumTable"></table>
+  </div>
+  </div><!-- /tabComparison -->
+
+  <div id="tabUnique" style="display:none">
+    <div class="hint" id="uniHint" style="margin-bottom:14px"></div>
+    <div class="kpis" id="uniKpis"></div>
+    <div class="card">
+      <h2>Unique Students by Mobile &mdash; Region breakdown</h2>
+      <div class="hint">Distinct phone numbers per region. 2024/2025 count phones with Reg&nbsp;Count&nbsp;&ge;&nbsp;1; 2026 counts all phones. (Region breakdown ignores the Center filter.)</div>
+      <div class="svgwrap"><svg id="uniChart" width="720" height="340" viewBox="0 0 720 340" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <table id="uniTable"></table>
+    </div>
+  </div>
+
+  <div class="foot">Generated by build_report.py &middot; VIQ Reg Report</div>
+</div>
+
+<script>
+function showErr(t){var e=document.getElementById('errbar'); if(e){e.style.display='block'; e.textContent='⚠ '+t;}}
+window.onerror=function(msg,src,ln,col,err){showErr(msg+(ln?(' :'+ln):'')+(err&&err.stack?('\n'+err.stack):'')); return false;};
+const MODEL = {"years":["2024","2025","2026"],"regions":["03_Franchise","05_Proleium"],"centers":["Aligarh (Masoodabad)","Aligarh (Ramghat)","Bettiah","Bhagalpur","Guwahati","Hyderabad info","Mohali (TBO)","Raipur","Siwan"],"regionOfCenter":{"Aligarh (Masoodabad)":1,"Aligarh (Ramghat)":1,"Bettiah":1,"Bhagalpur":1,"Guwahati":1,"Hyderabad info":0,"Mohali (TBO)":0,"Raipur":1,"Siwan":0},"rbhs":["Ankur Singh"],"rbhOfCenter":[0,0,0,0,0,0,0,0,0],"day1":{"2024":null,"2025":null,"2026":"2026-07-16"},"maxDay":104,"curDay":104,"classes":["6","7","8","9","10","11E","11M","12E","12M","13E","13M"],"classRows":[[2,0,8,2,1,0.0,193.0,193.0],[2,0,8,10,1,0.0,30.0,30.0],[2,0,8,0,1,0.0,32.0,32.0],[2,0,8,9,1,0.0,24.0,24.0],[2,0,8,6,1,0.0,86.0,86.0],[2,0,8,3,1,0.0,269.0,269.0],[2,0,5,5,1,0.0,120.0,120.0],[2,0,5,6,1,0.0,46.0,46.0],[2,0,5,2,1,1.0,25.0,25.0],[2,0,5,0,1,0.0,24.0,24.0],[2,0,5,9,1,0.0,50.0,50.0],[2,0,5,10,1,1.0,22.0,22.0],[2,0,8,4,1,0.0,220.0,220.0],[2,0,5,1,1,0.0,16.0,16.0],[2,0,5,4,1,0.0,81.0,81.0],[2,0,5,3,1,0.0,40.0,40.0],[2,0,5,8,1,0.0,16.0,16.0],[2,0,8,5,1,0.0,88.0,88.0],[2,0,5,7,1,0.0,49.0,49.0],[2,0,8,7,1,0.0,41.0,41.0],[2,0,8,8,1,0.0,26.0,26.0],[2,0,8,1,1,0.0,19.0,19.0],[2,0,6,6,1,0.0,16.0,16.0],[2,0,6,4,1,0.0,34.0,34.0],[2,0,6,3,1,1.0,19.0,19.0],[2,1,4,6,1,0.0,38.0,38.0],[2,1,4,5,1,0.0,32.0,32.0],[2,1,4,3,1,0.0,24.0,24.0],[2,1,4,7,1,0.0,35.0,35.0],[2,1,2,4,1,0.0,27.0,27.0],[2,0,6,8,1,0.0,6.0,6.0],[2,0,6,9,1,0.0,12.0,12.0],[2,1,4,4,1,0.0,61.0,61.0],[2,1,2,3,1,0.0,30.0,30.0],[2,1,0,2,1,0.0,5.0,5.0],[2,1,4,8,1,0.0,18.0,18.0],[2,1,4,10,1,0.0,22.0,22.0],[2,0,6,5,1,0.0,31.0,31.0],[2,1,1,10,1,0.0,7.0,7.0],[2,1,2,8,1,0.0,7.0,7.0],[2,1,4,9,1,0.0,19.0,19.0],[2,1,1,5,1,0.0,14.0,14.0],[2,0,6,7,1,0.0,14.0,14.0],[2,1,1,8,1,0.0,7.0,7.0],[2,1,0,10,1,0.0,4.0,4.0],[2,1,2,10,1,0.0,5.0,5.0],[2,1,0,3,1,0.0,8.0,8.0],[2,1,2,9,1,0.0,4.0,4.0],[2,1,2,7,1,0.0,15.0,15.0],[2,1,1,7,1,0.0,7.0,7.0],[2,1,2,6,1,0.0,13.0,13.0],[2,1,1,3,1,0.0,7.0,7.0],[2,1,0,2,0,0.0,41.0,41.0],[2,1,0,3,0,0.0,37.0,37.0],[2,1,0,4,0,0.0,52.0,52.0],[2,1,0,5,0,0.0,61.0,61.0],[2,1,0,8,0,0.0,2.0,2.0],[2,1,0,7,0,0.0,13.0,13.0],[2,1,0,9,0,0.0,17.0,17.0],[2,1,0,10,0,0.0,4.0,4.0],[2,0,6,10,1,0.0,9.0,9.0],[2,1,2,5,1,0.0,15.0,15.0],[2,1,3,4,1,0.0,54.0,54.0],[2,1,3,7,1,0.0,23.0,23.0],[2,1,0,4,1,0.0,13.0,13.0],[2,1,3,5,1,0.0,37.0,37.0],[2,1,3,9,1,0.0,7.0,7.0],[2,1,0,6,1,0.0,5.0,5.0],[2,1,1,6,1,0.0,6.0,6.0],[2,1,3,3,1,0.0,35.0,35.0],[2,1,2,2,1,0.0,12.0,12.0],[2,1,3,6,1,0.0,17.0,17.0],[2,1,0,8,1,0.0,6.0,6.0],[2,1,1,4,1,0.0,19.0,19.0],[2,1,1,9,1,0.0,2.0,2.0],[2,1,3,8,1,0.0,6.0,6.0],[2,1,3,2,1,1.0,16.0,16.0],[2,0,6,2,1,0.0,8.0,8.0],[2,1,1,2,1,0.0,5.0,5.0],[2,1,0,5,1,0.0,6.0,6.0],[2,1,0,9,1,0.0,3.0,3.0],[2,1,1,9,0,0.0,64.0,64.0],[2,1,1,10,0,0.0,41.0,41.0],[2,1,1,2,0,0.0,145.0,145.0],[2,1,1,3,0,0.0,146.0,146.0],[2,1,1,4,0,0.0,294.0,294.0],[2,1,1,5,0,0.0,282.0,282.0],[2,1,1,7,0,0.0,46.0,46.0],[2,1,1,8,0,0.0,42.0,42.0],[2,1,7,8,1,0.0,2.0,2.0],[2,1,0,7,1,0.0,4.0,4.0],[2,1,7,3,1,1.0,22.0,22.0],[2,1,7,5,1,0.0,20.0,20.0],[2,1,7,4,1,0.0,19.0,19.0],[2,1,7,6,1,0.0,12.0,12.0],[2,1,3,10,1,0.0,2.0,2.0],[2,1,7,2,1,0.0,6.0,6.0],[2,1,7,10,1,0.0,6.0,6.0],[2,1,4,2,1,0.0,8.0,8.0],[2,1,7,7,1,0.0,8.0,8.0],[2,1,7,9,1,0.0,6.0,6.0],[2,1,2,4,3,0.0,1.0,1.0]],"blankClass":[0,0,0],"ff2026":[[0,8,1,177],[0,5,1,273],[0,6,1,81],[1,4,1,141],[1,2,1,75],[1,1,1,39],[1,0,1,30],[1,3,1,95],[1,7,1,43]],"pmCats":["Free","Paid"],"rtCats":["Digital","Offline","Bulk","No Source"],"dayRows":[[2,0,8,1,1,1.0],[2,0,8,1,2,1.0],[2,0,8,1,3,5.0],[2,0,8,1,4,1.0],[2,0,8,1,5,1.0],[2,0,8,1,7,3.0],[2,0,8,1,8,2.0],[2,0,8,1,9,6.0],[2,0,8,1,10,10.0],[2,0,8,1,11,17.0],[2,0,8,1,12,9.0],[2,0,8,1,13,31.0],[2,0,8,1,14,27.0],[2,0,8,1,15,7.0],[2,0,8,1,30,3.0],[2,0,8,1,31,6.0],[2,0,8,1,32,5.0],[2,0,8,1,39,1.0],[2,0,8,1,43,3.0],[2,0,8,1,44,2.0],[2,0,8,1,45,2.0],[2,0,8,1,51,3.0],[2,0,8,1,52,1.0],[2,0,8,1,53,1.0],[2,0,8,1,54,3.0],[2,0,8,1,55,7.0],[2,0,8,1,56,1.0],[2,0,8,1,57,4.0],[2,0,8,1,58,2.0],[2,0,8,1,59,2.0],[2,0,8,1,60,3.0],[2,0,8,1,61,1.0],[2,0,8,1,62,1.0],[2,0,8,1,64,1.0],[2,0,8,1,65,2.0],[2,0,8,1,70,2.0],[2,0,8,1,71,4.0],[2,0,8,1,72,2.0],[2,0,8,1,73,1.0],[2,0,8,1,74,5.0],[2,0,8,1,75,7.0],[2,0,8,1,76,2.0],[2,0,8,1,77,11.0],[2,0,8,1,78,6.0],[2,0,8,1,79,5.0],[2,0,8,1,80,5.0],[2,0,8,1,81,7.0],[2,0,8,1,82,8.0],[2,0,8,1,83,2.0],[2,0,8,1,84,4.0],[2,0,8,1,85,234.0],[2,0,8,1,86,162.0],[2,0,8,1,87,6.0],[2,0,8,1,88,20.0],[2,0,8,1,89,24.0],[2,0,8,1,90,14.0],[2,0,8,1,91,7.0],[2,0,8,1,92,8.0],[2,0,8,1,93,239.0],[2,0,8,1,94,14.0],[2,0,8,1,95,5.0],[2,0,8,1,96,2.0],[2,0,8,1,97,5.0],[2,0,8,1,98,5.0],[2,0,8,1,99,8.0],[2,0,8,1,100,4.0],[2,0,8,1,101,8.0],[2,0,8,1,102,13.0],[2,0,8,1,103,3.0],[2,0,8,1,42,1.0],[2,0,5,1,4,2.0],[2,0,5,1,5,3.0],[2,0,5,1,6,3.0],[2,0,5,1,7,6.0],[2,0,5,1,8,9.0],[2,0,5,1,9,2.0],[2,0,5,1,10,3.0],[2,0,5,1,11,11.0],[2,0,5,1,12,2.0],[2,0,5,1,13,9.0],[2,0,5,1,14,11.0],[2,0,5,1,15,4.0],[2,0,5,1,30,1.0],[2,0,5,1,31,7.0],[2,0,5,1,32,5.0],[2,0,5,1,43,1.0],[2,0,5,1,44,2.0],[2,0,5,1,45,1.0],[2,0,5,1,51,4.0],[2,0,5,1,52,5.0],[2,0,5,1,53,3.0],[2,0,5,1,54,2.0],[2,0,5,1,55,1.0],[2,0,5,1,56,2.0],[2,0,5,1,59,1.0],[2,0,5,1,60,1.0],[2,0,5,1,65,2.0],[2,0,5,1,66,2.0],[2,0,5,1,67,1.0],[2,0,5,1,68,3.0],[2,0,5,1,69,5.0],[2,0,5,1,70,8.0],[2,0,5,1,71,1.0],[2,0,5,1,72,3.0],[2,0,5,1,73,5.0],[2,0,5,1,74,10.0],[2,0,5,1,75,13.0],[2,0,5,1,76,6.0],[2,0,5,1,77,10.0],[2,0,5,1,78,11.0],[2,0,5,1,79,15.0],[2,0,5,1,80,12.0],[2,0,5,1,81,18.0],[2,0,5,1,82,5.0],[2,0,5,1,83,9.0],[2,0,5,1,84,4.0],[2,0,5,1,85,6.0],[2,0,5,1,86,17.0],[2,0,5,1,87,22.0],[2,0,5,1,88,19.0],[2,0,5,1,89,13.0],[2,0,5,1,90,11.0],[2,0,5,1,91,16.0],[2,0,5,1,92,21.0],[2,0,5,1,93,14.0],[2,0,5,1,94,21.0],[2,0,5,1,95,9.0],[2,0,5,1,96,8.0],[2,0,5,1,97,8.0],[2,0,5,1,98,8.0],[2,0,5,1,99,10.0],[2,0,5,1,100,13.0],[2,0,5,1,101,14.0],[2,0,5,1,102,8.0],[2,0,5,1,103,4.0],[2,0,5,1,104,2.0],[2,0,5,1,34,1.0],[2,0,6,1,52,2.0],[2,0,6,1,53,1.0],[2,0,6,1,55,2.0],[2,0,6,1,56,1.0],[2,0,6,1,58,1.0],[2,0,6,1,65,2.0],[2,0,6,1,67,1.0],[2,0,6,1,69,1.0],[2,0,6,1,70,2.0],[2,0,6,1,73,3.0],[2,0,6,1,74,5.0],[2,0,6,1,75,7.0],[2,0,6,1,76,4.0],[2,0,6,1,77,7.0],[2,0,6,1,78,2.0],[2,0,6,1,79,6.0],[2,0,6,1,80,5.0],[2,0,6,1,81,6.0],[2,0,6,1,82,2.0],[2,0,6,1,83,5.0],[2,0,6,1,84,2.0],[2,0,6,1,85,1.0],[2,0,6,1,86,7.0],[2,0,6,1,87,5.0],[2,0,6,1,88,7.0],[2,0,6,1,89,5.0],[2,0,6,1,90,3.0],[2,0,6,1,91,7.0],[2,0,6,1,92,8.0],[2,0,6,1,93,3.0],[2,0,6,1,94,4.0],[2,0,6,1,95,5.0],[2,0,6,1,96,1.0],[2,0,6,1,97,3.0],[2,0,6,1,98,2.0],[2,0,6,1,99,6.0],[2,0,6,1,100,4.0],[2,0,6,1,101,4.0],[2,0,6,1,102,4.0],[2,0,6,1,103,2.0],[2,0,6,1,104,1.0],[2,1,4,1,63,4.0],[2,1,4,1,64,2.0],[2,1,4,1,65,2.0],[2,1,4,1,67,4.0],[2,1,4,1,68,3.0],[2,1,4,1,69,6.0],[2,1,4,1,70,5.0],[2,1,4,1,71,2.0],[2,1,4,1,72,1.0],[2,1,4,1,73,6.0],[2,1,4,1,74,4.0],[2,1,4,1,75,5.0],[2,1,4,1,76,4.0],[2,1,4,1,77,7.0],[2,1,4,1,78,2.0],[2,1,4,1,79,2.0],[2,1,4,1,80,5.0],[2,1,4,1,81,7.0],[2,1,4,1,82,12.0],[2,1,4,1,83,9.0],[2,1,4,1,84,3.0],[2,1,4,1,85,6.0],[2,1,4,1,86,8.0],[2,1,4,1,87,8.0],[2,1,4,1,88,7.0],[2,1,4,1,89,10.0],[2,1,4,1,90,8.0],[2,1,4,1,91,5.0],[2,1,4,1,92,7.0],[2,1,4,1,93,9.0],[2,1,4,1,94,10.0],[2,1,4,1,95,5.0],[2,1,4,1,96,7.0],[2,1,4,1,97,7.0],[2,1,4,1,98,12.0],[2,1,4,1,99,8.0],[2,1,4,1,100,14.0],[2,1,4,1,101,9.0],[2,1,4,1,102,14.0],[2,1,4,1,103,8.0],[2,1,2,1,65,1.0],[2,1,2,1,67,1.0],[2,1,2,1,68,1.0],[2,1,2,1,69,1.0],[2,1,2,1,73,4.0],[2,1,2,1,74,3.0],[2,1,2,1,75,9.0],[2,1,2,1,76,4.0],[2,1,2,1,77,1.0],[2,1,2,1,78,2.0],[2,1,2,1,79,2.0],[2,1,2,1,80,6.0],[2,1,2,1,81,7.0],[2,1,2,1,82,1.0],[2,1,2,1,83,4.0],[2,1,2,1,84,3.0],[2,1,2,1,85,3.0],[2,1,2,1,86,2.0],[2,1,2,1,87,8.0],[2,1,2,1,88,4.0],[2,1,2,1,89,3.0],[2,1,2,1,90,6.0],[2,1,2,1,91,4.0],[2,1,2,1,92,2.0],[2,1,2,1,93,7.0],[2,1,2,1,94,8.0],[2,1,2,1,95,2.0],[2,1,2,1,96,3.0],[2,1,2,1,98,4.0],[2,1,2,1,99,3.0],[2,1,2,1,100,4.0],[2,1,2,1,101,4.0],[2,1,2,1,102,2.0],[2,1,2,1,103,9.0],[2,1,0,1,68,1.0],[2,1,0,1,72,1.0],[2,1,0,1,73,1.0],[2,1,0,1,75,2.0],[2,1,0,1,76,2.0],[2,1,0,1,77,1.0],[2,1,0,1,78,1.0],[2,1,0,1,79,5.0],[2,1,0,1,80,2.0],[2,1,0,1,81,5.0],[2,1,0,1,83,1.0],[2,1,0,1,84,2.0],[2,1,0,1,85,2.0],[2,1,0,1,86,4.0],[2,1,0,1,87,4.0],[2,1,0,1,88,1.0],[2,1,0,1,91,2.0],[2,1,0,1,92,3.0],[2,1,0,1,93,4.0],[2,1,0,1,94,2.0],[2,1,0,1,96,1.0],[2,1,0,1,98,2.0],[2,1,0,1,99,1.0],[2,1,0,1,101,2.0],[2,1,0,1,102,2.0],[2,1,1,1,69,1.0],[2,1,1,1,70,2.0],[2,1,1,1,72,1.0],[2,1,1,1,73,2.0],[2,1,1,1,74,2.0],[2,1,1,1,75,4.0],[2,1,1,1,76,1.0],[2,1,1,1,77,2.0],[2,1,1,1,78,1.0],[2,1,1,1,79,3.0],[2,1,1,1,80,5.0],[2,1,1,1,81,2.0],[2,1,1,1,82,3.0],[2,1,1,1,83,2.0],[2,1,1,1,84,2.0],[2,1,1,1,85,1.0],[2,1,1,1,86,3.0],[2,1,1,1,87,4.0],[2,1,1,1,88,4.0],[2,1,1,1,89,2.0],[2,1,1,1,91,4.0],[2,1,1,1,92,3.0],[2,1,1,1,93,3.0],[2,1,1,1,94,3.0],[2,1,1,1,97,2.0],[2,1,1,1,98,3.0],[2,1,1,1,99,1.0],[2,1,1,1,100,1.0],[2,1,1,1,101,2.0],[2,1,1,1,103,5.0],[2,1,0,0,74,227.0],[2,1,3,1,75,5.0],[2,1,3,1,76,8.0],[2,1,3,1,77,7.0],[2,1,3,1,78,2.0],[2,1,3,1,79,10.0],[2,1,3,1,80,5.0],[2,1,3,1,81,8.0],[2,1,3,1,82,6.0],[2,1,3,1,83,1.0],[2,1,3,1,84,6.0],[2,1,3,1,85,6.0],[2,1,3,1,86,14.0],[2,1,3,1,87,8.0],[2,1,3,1,88,9.0],[2,1,3,1,89,4.0],[2,1,3,1,90,6.0],[2,1,3,1,91,8.0],[2,1,3,1,92,9.0],[2,1,3,1,93,8.0],[2,1,3,1,94,11.0],[2,1,3,1,95,5.0],[2,1,3,1,96,4.0],[2,1,3,1,97,5.0],[2,1,3,1,98,4.0],[2,1,3,1,99,6.0],[2,1,3,1,100,12.0],[2,1,3,1,101,10.0],[2,1,3,1,102,3.0],[2,1,3,1,103,6.0],[2,1,3,1,104,1.0],[2,1,1,0,82,1060.0],[2,1,7,1,83,3.0],[2,1,7,1,84,3.0],[2,1,7,1,85,4.0],[2,1,7,1,86,9.0],[2,1,7,1,87,1.0],[2,1,7,1,88,6.0],[2,1,7,1,89,4.0],[2,1,7,1,90,10.0],[2,1,7,1,91,7.0],[2,1,7,1,92,6.0],[2,1,7,1,93,10.0],[2,1,7,1,94,6.0],[2,1,7,1,95,7.0],[2,1,7,1,96,6.0],[2,1,7,1,97,1.0],[2,1,7,1,99,3.0],[2,1,7,1,100,3.0],[2,1,7,1,101,3.0],[2,1,7,1,102,5.0],[2,1,7,1,103,3.0],[2,1,7,1,104,1.0],[2,1,2,3,103,1.0]],"pmRows":[[2,0,8,1,0,1027.0],[2,0,8,1,1,1.0],[2,0,5,1,0,488.0],[2,0,5,1,1,1.0],[2,0,6,1,0,148.0],[2,0,6,1,1,1.0],[2,1,4,1,0,257.0],[2,1,2,1,0,128.0],[2,1,0,1,0,54.0],[2,1,1,1,0,74.0],[2,1,0,0,0,227.0],[2,1,3,1,0,197.0],[2,1,1,0,0,1060.0],[2,1,7,1,0,101.0],[2,1,2,3,1,1.0]],"rtRows":[[2,0,8,1,0,379.0],[2,0,8,1,3,37.0],[2,0,8,1,2,612.0],[2,0,5,1,0,463.0],[2,0,5,1,3,26.0],[2,0,6,1,0,127.0],[2,0,6,1,1,7.0],[2,0,6,1,3,15.0],[2,1,4,1,0,247.0],[2,1,4,1,3,10.0],[2,1,2,1,0,115.0],[2,1,2,1,3,13.0],[2,1,0,1,0,52.0],[2,1,0,1,3,2.0],[2,1,1,1,0,70.0],[2,1,1,1,3,4.0],[2,1,0,0,2,227.0],[2,1,3,1,0,192.0],[2,1,3,1,3,5.0],[2,1,1,0,2,1060.0],[2,1,7,1,0,95.0],[2,1,7,1,3,6.0],[2,1,2,3,0,1.0]],"metRows":[[2,0,8,1,1028.0,410.0,332.0,0.0],[2,0,5,1,489.0,96.0,76.0,0.0],[2,0,6,1,149.0,2.0,0.0,0.0],[2,1,4,1,257.0,6.0,0.0,0.0],[2,1,2,1,128.0,2.0,0.0,0.0],[2,1,0,1,54.0,1.0,0.0,0.0],[2,1,1,1,74.0,4.0,0.0,0.0],[2,1,0,0,227.0,0.0,0.0,0.0],[2,1,3,1,197.0,4.0,0.0,0.0],[2,1,1,0,1060.0,0.0,0.0,0.0],[2,1,7,1,101.0,14.0,9.0,0.0],[2,1,2,3,1.0,0.0,0.0,0.0]],"uniCenter":[[2,0,8,996],[2,0,5,445],[2,0,6,138],[2,1,4,229],[2,1,2,120],[2,1,0,260],[2,1,1,1129],[2,1,3,184],[2,1,7,94]],"uniRegion":[[2,0,1577],[2,1,2010]],"uniYear":[0,0,3583],"uniCenterTT":[[2,0,8,1,996],[2,0,5,1,445],[2,0,6,1,138],[2,1,4,1,229],[2,1,2,1,119],[2,1,0,1,49],[2,1,1,1,69],[2,1,0,0,211],[2,1,3,1,184],[2,1,1,0,1060],[2,1,7,1,94],[2,1,2,3,1]],"testTypes":["Insta","VIQ","Insta VIQ","VIQ+"],"mktCats":["3Rd Party","Bulk Upload","Centre Activity","Facebook_Ad","Google Ads","Influencer","Organic","Outbound","Outreach","Social"],"mktRows":[[0,8,1,4,199],[0,8,1,6,52],[0,8,1,8,51],[0,8,1,0,94],[0,5,1,0,278],[0,5,1,4,41],[0,5,1,6,45],[0,5,1,5,33],[0,5,1,8,74],[0,8,1,9,1],[0,5,1,3,13],[0,6,1,0,55],[0,6,1,6,34],[0,6,1,8,26],[1,4,1,0,177],[0,8,1,7,3],[1,2,1,0,41],[1,0,1,0,22],[1,1,1,0,28],[1,4,1,8,46],[1,1,1,8,16],[1,2,1,6,18],[1,0,1,8,12],[1,2,1,8,14],[1,4,1,6,13],[1,2,1,3,5],[0,8,1,5,6],[1,1,1,3,4],[1,2,1,5,5],[1,2,1,4,44],[1,0,0,1,227],[0,6,1,7,1],[0,6,1,5,16],[0,6,1,3,2],[1,1,1,4,12],[1,3,1,4,78],[1,3,1,8,36],[0,5,1,9,3],[1,3,1,6,6],[1,4,1,5,11],[1,0,1,5,6],[1,0,1,4,9],[0,6,1,4,14],[1,3,1,0,60],[1,3,1,5,6],[0,8,1,3,9],[1,1,1,6,8],[1,1,1,5,5],[1,2,1,9,1],[1,4,1,4,6],[0,6,1,9,1],[1,3,1,3,11],[1,0,1,6,3],[0,8,1,1,612],[1,4,1,3,3],[0,5,1,7,2],[1,1,0,1,1060],[1,7,1,0,55],[1,7,1,6,9],[1,7,1,5,4],[1,7,1,4,8],[1,7,1,8,21],[1,7,1,3,4],[1,4,1,9,1],[1,0,1,3,1],[1,0,1,9,1],[1,1,1,9,1],[0,8,1,2,1],[1,2,3,6,1]],"atVals":["Insta Test 30 Sep 2026 11:00 AM TO 12:00 PM - Offline","Insta Test 6 Oct 2026 10:30 AM - 11:30 AM - Offline","VMC VIQ 1 Nov 2026 11:00 AM TO 1:00 PM","VMC VIQ 10 Oct 2026 11:00 AM TO 1:00 PM","VMC VIQ 11 Oct 2026 11:00 AM TO 1:00 PM - Offline","VMC VIQ 17 Oct 2026 4:00 PM TO 6:00 PM","VMC VIQ 18 Oct 2026 11:00 AM TO 1:00 PM - Offline","VMC VIQ 24 Oct 2026 4:00 PM TO 6:00 PM","VMC VIQ 25 Oct 2026 11:00 AM TO 1:00 PM - Offline","VMC VIQ 4 Oct 2026 11:00 AM TO 1:00 PM","VMC VIQ 4 Oct 2026 11:00 AM TO 1:00 PM - Offline","VMC VIQ 4 Oct 2026 4:00 PM TO 6:00 PM","VMC VIQ+ 14 Nov 2026 11:00 AM TO 1:00 PM"],"atRows":[[0,8,1,9,81],[0,8,1,4,415],[0,8,1,8,279],[0,8,1,11,23],[0,8,1,2,63],[0,8,1,10,41],[0,5,1,9,55],[0,5,1,11,42],[0,5,1,2,121],[0,5,1,7,85],[0,5,1,3,34],[0,5,1,5,134],[0,8,1,5,47],[0,8,1,7,48],[0,5,1,4,2],[0,8,1,3,31],[0,5,1,10,8],[0,5,1,8,6],[0,6,1,9,11],[0,6,1,3,14],[0,6,1,11,15],[1,4,1,3,31],[1,4,1,11,11],[1,4,1,5,56],[1,4,1,2,82],[1,4,1,9,21],[1,2,1,9,10],[1,4,1,7,56],[1,2,1,7,27],[1,0,1,11,2],[1,2,1,11,8],[1,1,1,9,10],[1,2,1,3,15],[1,1,1,3,12],[1,0,1,9,5],[1,2,1,2,37],[0,6,1,7,33],[1,1,1,11,6],[0,6,1,5,39],[0,6,1,2,37],[1,0,0,0,227],[1,2,1,5,31],[1,3,1,9,13],[1,3,1,3,18],[1,0,1,3,8],[1,3,1,5,46],[1,1,1,7,13],[1,3,1,11,8],[1,1,1,2,15],[1,0,1,2,17],[1,3,1,2,68],[1,3,1,7,44],[1,0,1,7,14],[1,1,1,5,18],[1,0,1,5,8],[1,1,0,1,1060],[1,7,1,5,32],[1,7,1,3,7],[1,7,1,7,27],[1,7,1,6,3],[0,5,1,6,2],[1,7,1,2,31],[1,7,1,8,1],[1,2,3,12,1]],"rbhName":"Ankur Singh"};
+const GEN = "2026-10-27 15:24";
+function getVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888';}
+const YVAR={0:'--y2024',1:'--y2025',2:'--y2026'};
+function yc(i){return getVar(YVAR[i]);}
+// Indian grouping without toLocaleString (some iOS Safari builds mishandle the locale arg)
+function fmt(n){ n=Math.round(+n||0); var neg=n<0; n=Math.abs(n); var s=''+n;
+  if(s.length>3){ var l3=s.slice(-3), head=s.slice(0,-3);
+    head=head.replace(/\B(?=(\d\d)+$)/g,','); s=head+','+l3; }
+  return (neg?'-':'')+s; }
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+// numeric Date constructor (no string parsing) — reliable on every engine incl. iOS
+function ddate(iso,add){ if(!iso) return ''; var p=(''+iso).split('-');
+  var d=new Date(+p[0], (+p[1])-1, +p[2]); d.setDate(d.getDate()+(add||0));
+  var day=d.getDate(); return (day<10?'0':'')+day+' '+MON[d.getMonth()]; }
+
+let region = -1, center = -1, rbh = -1, testType = -1, mode = 'daily', dayView = 'chart', classView = 'chart';
+let blinkDay = true;   // 'By Day' figure blinks for the first 20s (see timer below)
+
+// ---- floating tooltip (Power BI style)
+const tip=document.createElement('div'); tip.id='tip'; tip.style.display='none'; document.body.appendChild(tip);
+function showTip(html,x,y){ tip.innerHTML=html; tip.style.display='block';
+  const r=tip.getBoundingClientRect(); let tx=x+16, ty=y+16;
+  if(tx+r.width>window.innerWidth-8) tx=x-r.width-16;
+  if(ty+r.height>window.innerHeight-8) ty=y-r.height-16;
+  tip.style.left=Math.max(6,tx)+'px'; tip.style.top=Math.max(6,ty)+'px'; }
+function hideTip(){ tip.style.display='none'; }
+
+document.getElementById('genTag').textContent = 'generated ' + GEN;
+
+// ---- populate selectors
+const regionSel = document.getElementById('regionSel');
+const centerSel = document.getElementById('centerSel');
+const rbhSel = document.getElementById('rbhSel');
+const testTypeSel = document.getElementById('testTypeSel');
+function fillTestType(){
+  testTypeSel.innerHTML = '<option value="-1">All Test Types</option>' +
+    MODEL.testTypes.map((t,i)=>`<option value="${i}">${t}</option>`).join('');
+}
+function fillRegion(){
+  regionSel.innerHTML = '<option value="-1">All Regions</option>' +
+    MODEL.regions.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
+}
+function fillRbh(){
+  rbhSel.innerHTML = '<option value="-1">All RBH</option>' +
+    MODEL.rbhs.map((r,i)=>`<option value="${i}">${r}</option>`).join('');
+}
+function fillCenter(){
+  let opts = '<option value="-1">All Centers</option>';
+  MODEL.centers.forEach((c,i)=>{
+    if((region===-1 || MODEL.regionOfCenter[c]===region) &&
+       (rbh===-1 || MODEL.rbhOfCenter[i]===rbh))
+      opts += `<option value="${i}">${c}</option>`;
+  });
+  centerSel.innerHTML = opts;
+  center = -1;
+}
+fillRegion(); fillRbh(); fillCenter(); fillTestType();
+regionSel.onchange = e => { region = +e.target.value; fillCenter(); render(); };
+rbhSel.onchange = e => { rbh = +e.target.value; fillCenter(); render(); };
+centerSel.onchange = e => { center = +e.target.value; render(); };
+testTypeSel.onchange = e => { testType = +e.target.value; render(); };
+
+// ---- per-RBH page: hide Region + RBH dropdowns, show the RBH name (blinks ~10s)
+if(MODEL.rbhName){
+  var _cr=document.getElementById('ctlRegion'); if(_cr) _cr.style.display='none';
+  var _cb=document.getElementById('ctlRbh');    if(_cb) _cb.style.display='none';
+  var _bn=document.getElementById('rbhBanner');
+  _bn.style.display='block';
+  _bn.innerHTML='<span class="who">RBH</span><span class="blink10">'+MODEL.rbhName+'</span>';
+}
+// ---- Patna page: hide Region + RBH dropdowns, rename "All Centers" to "Patna All Centers"
+if(MODEL.patnaPage){
+  var _cr=document.getElementById('ctlRegion'); if(_cr) _cr.style.display='none';
+  var _cb=document.getElementById('ctlRbh');    if(_cb) _cb.style.display='none';
+  var _bn=document.getElementById('rbhBanner');
+  _bn.style.display='block';
+  _bn.innerHTML='<span class="who">City</span><span class="blink10">Patna Centers</span>';
+  if(centerSel.options[0]) centerSel.options[0].text='Patna All Centers';
+}
+document.querySelectorAll('#modeSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#modeSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); mode=b.dataset.m; render();};
+});
+document.querySelectorAll('#viewSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#viewSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); dayView=b.dataset.v;
+    document.getElementById('dayChartWrap').style.display = dayView==='chart'?'block':'none';
+    document.getElementById('dayTableWrap').style.display = dayView==='table'?'block':'none';
+    render();};
+});
+document.querySelectorAll('#classSeg button').forEach(b=>{
+  b.onclick=()=>{document.querySelectorAll('#classSeg button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); classView=b.dataset.cv;
+    document.getElementById('classChartWrap').style.display = classView==='chart'?'block':'none';
+    document.getElementById('classTableWrap').style.display = classView==='table'?'block':'none';
+    renderClass();};
+});
+function switchTab(t){ var cmp=(t==='cmp');
+  document.getElementById('tabComparison').style.display = cmp?'block':'none';
+  document.getElementById('tabUnique').style.display = cmp?'none':'block';
+  document.getElementById('tabBtnCmp').classList.toggle('on',cmp);
+  document.getElementById('tabBtnUni').classList.toggle('on',!cmp);
+}
+
+// ---- filtering helpers
+function match(r,c){ return (region===-1||r===region) && (center===-1||c===center) && (rbh===-1||MODEL.rbhOfCenter[c]===rbh); }
+function mt(t){ return testType===-1 || t===testType; }   // test-type filter
+
+// ---- aggregate current scope
+function dayData(){
+  const per = [ {}, {}, {} ];        // year -> {day:val}
+  for(const [y,r,c,t,d,v] of MODEL.dayRows){ if(match(r,c)&&mt(t)) per[y][d]=(per[y][d]||0)+v; }
+  return per;
+}
+function catData(rows, ncats){
+  const per = [ Array(ncats).fill(0), Array(ncats).fill(0), Array(ncats).fill(0) ];
+  for(const [y,r,c,t,k,v] of rows){ if(match(r,c)&&mt(t)) per[y][k]+=v; }
+  return per;
+}
+function metData(){
+  const per = [ [0,0,0,0],[0,0,0,0],[0,0,0,0] ];
+  for(const [y,r,c,t,reg,att,sel,adm] of MODEL.metRows){
+    if(match(r,c)&&mt(t)){ per[y][0]+=reg; per[y][1]+=att; per[y][2]+=sel; per[y][3]+=adm; }
+  }
+  return per;
+}
+function cumArrays(dd,maxDay){ const cum=[[],[],[]];
+  for(let y=0;y<3;y++){ let s=0; for(let d=1;d<=maxDay;d++){ s+=(dd[y][d]||0); cum[y][d]=s; } } return cum; }
+function currentDay2026(){ return MODEL.curDay; }   // kept for compatibility; as-on day is global
+
+// ---- tiny SVG chart lib -------------------------------------------------
+let DG=null;   // day-chart geometry for hover
+function lineChart(svg, dd, maxDay, curDay){
+  const W=1120,H=380,ml=64,mr=18,mt=18,mb=42, pw=W-ml-mr, ph=H-mt-mb;
+  const cum=cumArrays(dd,maxDay);
+  const val=(y,d)=> mode==='cum' ? cum[y][d] : (dd[y][d]||0);
+  let max=0;
+  for(let y=0;y<3;y++) for(let d=1;d<=maxDay;d++){ const v=val(y,d); if(v>max) max=v; }
+  max = niceMax(max);
+  const X = d => ml + (maxDay<=1?0:(d-1)/(maxDay-1))*pw;
+  const Y = v => mt + ph - (max?v/max:0)*ph;
+  let g = `<rect x="0" y="0" width="${W}" height="${H}" fill="none"/>`;
+  for(let i=0;i<=5;i++){ const vv=max*i/5, yy=Y(vv);
+    g+=`<line x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}" stroke="${getVar('--line')}" stroke-width="1"/>`;
+    g+=`<text x="${ml-8}" y="${yy+4}" fill="${getVar('--muted')}" font-size="11" text-anchor="end">${fmt(vv)}</text>`;
+  }
+  const step = Math.max(1, Math.ceil(maxDay/12));
+  for(let d=1; d<=maxDay; d+=step)
+    g+=`<text x="${X(d)}" y="${H-mb+18}" fill="${getVar('--muted')}" font-size="11" text-anchor="middle">${d}</text>`;
+  g+=`<text x="${ml+pw/2}" y="${H-6}" fill="${getVar('--muted')}" font-size="11" text-anchor="middle">Day index (Day 1 = first registration date)</text>`;
+  // "today" marker at 2026's current day
+  if(curDay>=1 && curDay<=maxDay){ const mx=X(curDay);
+    g+=`<line x1="${mx}" y1="${mt}" x2="${mx}" y2="${mt+ph}" stroke="${yc(2)}" stroke-width="1" stroke-dasharray="4 3" opacity="0.75"/>`;
+    g+=`<text x="${mx}" y="${mt-3}" fill="${yc(2)}" font-size="10" text-anchor="middle">Day ${curDay}</text>`;
+  }
+  // lines
+  for(let y=0;y<3;y++){ let pts=[];
+    for(let d=1; d<=maxDay; d++){ if(mode==='daily' && !(d in dd[y])) continue; pts.push([X(d), Y(val(y,d))]); }
+    if(!pts.length) continue;
+    g+=`<path d="${pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')}" fill="none" stroke="${yc(y)}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  }
+  g+=`<g class="hoverlayer"></g>`;
+  g+=`<rect x="${ml}" y="${mt}" width="${pw}" height="${ph}" fill="transparent" onmousemove="dayTip(event)" onmouseleave="dayLeave()" ontouchstart="dayTouch(event)" ontouchmove="dayTouch(event)" ontouchend="dayLeave()"/>`;
+  svg.innerHTML=g;
+  DG={svg,W,ml,pw,mt,ph,maxDay,X,Y,val,dd};
+}
+function dayTouch(e){ if(e.touches && e.touches[0]){ e.preventDefault(); dayTip(e.touches[0]); } }
+function dayTip(evt){ if(!DG) return; const rect=DG.svg.getBoundingClientRect();
+  const sx=DG.W/rect.width, vx=(evt.clientX-rect.left)*sx;
+  let d=Math.round(1+(vx-DG.ml)/DG.pw*(DG.maxDay-1)); d=Math.max(1,Math.min(DG.maxDay,d));
+  let hg=`<line x1="${DG.X(d)}" y1="${DG.mt}" x2="${DG.X(d)}" y2="${DG.mt+DG.ph}" stroke="${getVar('--muted')}" stroke-width="1"/>`;
+  let rows='';
+  for(let y=0;y<3;y++){ if(mode==='daily' && !(d in DG.dd[y])) continue;
+    const v=DG.val(y,d);
+    hg+=`<circle cx="${DG.X(d)}" cy="${DG.Y(v)}" r="4" fill="${yc(y)}" stroke="#fff" stroke-width="1"/>`;
+    rows+=`<div class="tr"><span class="sw" style="background:${yc(y)}"></span>${MODEL.years[y]} · ${ddate(MODEL.day1[MODEL.years[y]],d-1)}<b>${fmt(v)}</b></div>`;
+  }
+  DG.svg.querySelector('.hoverlayer').innerHTML=hg;
+  showTip(`<div class="th">Day ${d} · ${mode==='cum'?'cumulative':'daily'}</div>${rows||'<div class="tr">no data</div>'}`, evt.clientX, evt.clientY);
+}
+function dayLeave(){ if(DG){ const h=DG.svg.querySelector('.hoverlayer'); if(h) h.innerHTML=''; } hideTip(); }
+function groupedBars(svg, cats, seriesByYear, W, H){
+  W=W||540; H=H||340;
+  const ml=52,mr=10,mt=14,mb=70, pw=W-ml-mr, ph=H-mt-mb;
+  let max=0; seriesByYear.forEach(a=>a.forEach(v=>{if(v>max)max=v;})); max=niceMax(max);
+  const y=v=>mt+ph-(max?v/max:0)*ph;
+  let g='';
+  for(let i=0;i<=4;i++){ const val=max*i/4, yy=y(val);
+    g+=`<line x1="${ml}" y1="${yy}" x2="${W-mr}" y2="${yy}" stroke="${getVar('--line')}"/>`;
+    g+=`<text x="${ml-6}" y="${yy+4}" fill="${getVar('--muted')}" font-size="10" text-anchor="end">${fmt(val)}</text>`;}
+  const gw=pw/cats.length, bw=Math.min(22,(gw-10)/3);
+  cats.forEach((cat,ci)=>{
+    const gx=ml+ci*gw+ (gw-bw*3)/2;
+    const cc=String(cat).replace(/'/g,"’").replace(/</g,"");
+    for(let yr=0;yr<3;yr++){ const v=seriesByYear[yr][ci]||0; const bx=gx+yr*bw; const by=y(v);
+      g+=`<rect x="${bx}" y="${by}" width="${bw-2}" height="${mt+ph-by}" fill="${yc(yr)}" rx="2" onmousemove="barTip(event,'${cc}',${yr},${v})" onmouseleave="hideTip()" ontouchstart="barTouch(event,'${cc}',${yr},${v})" ontouchend="hideTip()"/>`;}
+    g+=`<text x="${ml+ci*gw+gw/2}" y="${H-mb+16}" fill="${getVar('--muted')}" font-size="11" text-anchor="middle">${cat}</text>`;
+  });
+  svg.innerHTML=g;
+}
+function barTip(evt,cat,yr,v){
+  showTip(`<div class="th">${cat}</div><div class="tr"><span class="sw" style="background:${yc(yr)}"></span>${MODEL.years[yr]}<b>${fmt(v)}</b></div>`, evt.clientX, evt.clientY);
+}
+function barTouch(e,cat,yr,v){ if(e.touches && e.touches[0]){ e.preventDefault(); barTip(e.touches[0],cat,yr,v); } }
+function renderDayTable(dd,maxDay){
+  const cum=cumArrays(dd,maxDay);
+  const val=(y,d)=> mode==='cum' ? cum[y][d] : (dd[y][d]||0);
+  let h=`<table><thead><tr><th>Day</th><th>2026 date</th><th>2024</th><th>2025</th><th>2026</th></tr></thead><tbody>`;
+  for(let d=1; d<=maxDay; d++){
+    h+=`<tr><td>${d}</td><td>${ddate(MODEL.day1['2026'],d-1)}</td><td>${fmt(val(0,d))}</td><td>${fmt(val(1,d))}</td><td>${fmt(val(2,d))}</td></tr>`;
+  }
+  const tot=[0,1,2].map(y=> mode==='cum' ? cum[y][maxDay] : Object.values(dd[y]).reduce((a,b)=>a+b,0));
+  h+=`</tbody><tfoot><tr><th>Total</th><th></th><th>${fmt(tot[0])}</th><th>${fmt(tot[1])}</th><th>${fmt(tot[2])}</th></tr></tfoot></table>`;
+  document.getElementById('dayTableWrap').innerHTML=h;
+}
+function niceMax(m){ if(m<=0)return 1; const p=Math.pow(10,Math.floor(Math.log10(m))); const n=m/p;
+  const f = n<=1?1:n<=2?2:n<=5?5:10; return f*p; }
+
+function catTable(el, cats, per){
+  let h='<tr><th>Category</th><th>2024</th><th>2025</th><th>2026</th></tr>';
+  cats.forEach((c,i)=>{ h+=`<tr><td>${c}</td><td>${fmt(per[0][i]||0)}</td><td>${fmt(per[1][i]||0)}</td><td>${fmt(per[2][i]||0)}</td></tr>`; });
+  const t=[0,1,2].map(y=>per[y].reduce((a,b)=>a+b,0));
+  h+=`<tr><th>Total</th><th>${fmt(t[0])}</th><th>${fmt(t[1])}</th><th>${fmt(t[2])}</th></tr>`;
+  el.innerHTML=h;
+}
+
+// ---- render everything --------------------------------------------------
+function render(){
+  const dd = dayData();
+  const cur = MODEL.curDay;                        // as-on day (2026 latest, global)
+  const cum = cumArrays(dd, MODEL.maxDay);
+  const pace = [cum[0][cur]||0, cum[1][cur]||0, cum[2][cur]||0];   // By Day = cumulative to day N
+  const dayTot = [dd[0][cur]||0, dd[1][cur]||0, dd[2][cur]||0];    // Day Total = day N alone
+  const full = [0,1,2].map(y=>Object.values(dd[y]).reduce((a,b)=>a+b,0));   // Grand Total
+  const names = MODEL.years;
+  // ---- KPI tiles: By Day | Day Total | Grand Total  (2026: By Day | Day Total + growth)
+  document.getElementById('kpis').innerHTML = names.map((n,i)=>{
+    const byday = `<div class="valcol"><div class="sublbl">By Day ${cur} (${ddate(MODEL.day1[n],cur-1)})</div><div class="val${blinkDay?' blink':''}">${fmt(pace[i])}</div></div>`;
+    const dtot  = `<div class="valcol"><div class="sublbl">Day Total (Day ${cur})</div><div class="val">${fmt(dayTot[i])}</div></div>`;
+    if(i===2){
+      const p25 = pace[1]>0 ? (pace[2]-pace[1])/pace[1]*100 : null;
+      const p24 = pace[0]>0 ? (pace[2]-pace[0])/pace[0]*100 : null;
+      const delta = [p25!==null?`${p25>=0?'▲':'▼'} ${Math.abs(p25).toFixed(1)}% vs 2025`:null,
+               p24!==null?`${p24>=0?'▲':'▼'} ${Math.abs(p24).toFixed(1)}% vs 2024`:null]
+               .filter(Boolean).join(' · ') || '—';
+      return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}</div><div class="delta">${delta}</div></div>`;
+    }
+    const gtot = `<div class="valcol"><div class="sublbl">Grand Total</div><div class="val">${fmt(full[i])}</div></div>`;
+    return `<div class="kpi k${n}"><div class="yr">${n}</div><div class="valrow">${byday}${dtot}${gtot}</div></div>`;
+  }).join('');
+  // ---- 2026 "2nd Page Form fill-up" = filled father_phone (scope-aware)
+  let ff=0; for(const [r,c,t,nn] of MODEL.ff2026){ if(match(r,c)&&mt(t)) ff+=nn; }
+  document.getElementById('ffCallout').innerHTML =
+    '<div class="lbl">2nd Page Form fill-up · 2026</div><div class="val">'+fmt(ff)+'</div>';
+
+  const scope = (region===-1?'All Regions':MODEL.regions[region]) + (rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh]) + (testType===-1?'':' · Test: '+MODEL.testTypes[testType]) + (center===-1?'':' › '+MODEL.centers[center]);
+  document.getElementById('dayHint').textContent =
+    'Scope: '+scope+' · '+(mode==='cum'?'Cumulative':'Daily')+' · dashed marker = Day '+cur+' (2026 latest)';
+
+  if(dayView==='chart') lineChart(document.getElementById('dayChart'), dd, MODEL.maxDay, cur);
+  else renderDayTable(dd, MODEL.maxDay);
+
+  const rt = catData(MODEL.rtRows, MODEL.rtCats.length);
+  groupedBars(document.getElementById('rtChart'), MODEL.rtCats, rt);
+  catTable(document.getElementById('rtTable'), MODEL.rtCats, rt);
+
+  const pm = catData(MODEL.pmRows, MODEL.pmCats.length);
+  groupedBars(document.getElementById('pmChart'), MODEL.pmCats, pm);
+  catTable(document.getElementById('pmTable'), MODEL.pmCats, pm);
+
+  // summary: Reg / Attendance / Selection / Admission across all three years
+  const met = metData();
+  const labels=['Reg Count','Attendance','Selection','Admission'];
+  const s24=met[0], s25=met[1], s26=met[2];
+  groupedBars(document.getElementById('sumChart'),
+      labels, [s24, s25, s26]);
+  let h='<tr><th>Metric</th><th>2024</th><th>2025</th><th>2026</th><th>Δ% 25→26</th></tr>';
+  labels.forEach((l,i)=>{ const a=s24[i]||0,b=s25[i]||0,c=s26[i]||0;
+    const d=b>0?(((c-b)/b)*100).toFixed(1)+'%':'—';
+    h+=`<tr><td>${l}</td><td>${fmt(a)}</td><td>${fmt(b)}</td><td>${fmt(c)}</td><td>${d}</td></tr>`;});
+  document.getElementById('sumTable').innerHTML=h;
+  // ---- 2026 Attendance & Selection callouts (scope-aware, from result-file join)
+  const att26=s26[1]||0, sel26=s26[2]||0, selRate=att26>0?(sel26/att26*100).toFixed(1):'0.0';
+  document.getElementById('attCallout').innerHTML =
+    '<div class="lbl">Attendance · 2026</div><div class="val">'+fmt(att26)+'</div>';
+  document.getElementById('selCallout').innerHTML =
+    '<div class="lbl">Selected · 2026 ('+selRate+'%)</div><div class="val">'+fmt(sel26)+'</div>';
+
+  renderClass();
+  renderUnique();
+  renderMktCategory();
+  renderAdmissionTest();
+}
+
+// ---- Marketing Category (2026) ----------------------------------------
+function renderMktCategory(){
+  const cats = MODEL.mktCats;
+  const tot = Array(cats.length).fill(0);
+  for(const [r,c,t,mi,n] of MODEL.mktRows){ if(match(r,c)&&mt(t)) tot[mi]+=n; }
+  const grand = tot.reduce((a,b)=>a+b,0);
+
+  // table
+  let h='<table><thead><tr><th style="text-align:left">Marketing Category</th><th>Count</th><th>%</th></tr></thead><tbody>';
+  const order = cats.map((c,i)=>({c,i,v:tot[i]})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  order.forEach(({c,v})=>{
+    const pct = grand>0?(v/grand*100).toFixed(1):'0.0';
+    h+=`<tr><td style="text-align:left">${c}</td><td>${fmt(v)}</td><td>${pct}%</td></tr>`;
+  });
+  h+=`<tr style="font-weight:700"><td style="text-align:left">Total</td><td>${fmt(grand)}</td><td>100%</td></tr>`;
+  h+='</tbody></table>';
+  document.getElementById('mktTableWrap').innerHTML=h;
+
+  // pie chart
+  const svg=document.getElementById('mktPieChart');
+  svg.innerHTML='';
+  if(!grand||order.length===0){svg.innerHTML='<text x="230" y="200" text-anchor="middle" fill="var(--muted)" font-size="14">No data</text>';return;}
+  const COLORS=['#5b8cff','#38d39f','#f4a259','#e05555','#b57bee','#f7c948','#4ecdc4','#ff6b9d','#a8e063','#f9844a','#48cae4','#c77dff'];
+  const cx=180,cy=185,R=160,LX=370,LY=30,LS=18;
+  let ang=-Math.PI/2;
+  order.forEach(({c,v},i)=>{
+    const a=v/grand*2*Math.PI, col=COLORS[i%COLORS.length];
+    const x1=cx+R*Math.cos(ang), y1=cy+R*Math.sin(ang);
+    const x2=cx+R*Math.cos(ang+a), y2=cy+R*Math.sin(ang+a);
+    const lg=a>Math.PI?1:0;
+    const d=`M${cx},${cy} L${x1},${y1} A${R},${R} 0 ${lg},1 ${x2},${y2} Z`;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',d); path.setAttribute('fill',col);
+    path.setAttribute('stroke','var(--panel)'); path.setAttribute('stroke-width','2');
+    svg.appendChild(path);
+    // label inside slice if big enough
+    if(a>0.25){
+      const mx=cx+R*0.65*Math.cos(ang+a/2), my=cy+R*0.65*Math.sin(ang+a/2);
+      const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',mx); t.setAttribute('y',my); t.setAttribute('text-anchor','middle');
+      t.setAttribute('dominant-baseline','middle'); t.setAttribute('font-size','11');
+      t.setAttribute('font-weight','700'); t.setAttribute('fill','#fff');
+      t.textContent=(v/grand*100).toFixed(0)+'%'; svg.appendChild(t);
+    }
+    // legend
+    const ly=LY+i*LS;
+    if(ly<390){
+      const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+      rect.setAttribute('x',LX); rect.setAttribute('y',ly); rect.setAttribute('width',12); rect.setAttribute('height',12); rect.setAttribute('fill',col); rect.setAttribute('rx',2); svg.appendChild(rect);
+      const lt=document.createElementNS('http://www.w3.org/2000/svg','text');
+      lt.setAttribute('x',LX+16); lt.setAttribute('y',ly+10); lt.setAttribute('font-size','11');
+      lt.setAttribute('fill','var(--ink)');
+      const label=c.length>18?c.slice(0,17)+'…':c;
+      lt.textContent=label+' ('+fmt(v)+')'; svg.appendChild(lt);
+    }
+    ang+=a;
+  });
+}
+
+// ---- Admission Test-wise count (2026) ---------------------------------
+function renderAdmissionTest(){
+  const vals = MODEL.atVals;
+  const tot = Array(vals.length).fill(0);
+  for(const [r,c,t,ai,n] of MODEL.atRows){ if(match(r,c)&&mt(t)) tot[ai]+=n; }
+  const grand = tot.reduce((a,b)=>a+b,0);
+  let h='<table><thead><tr><th style="text-align:left">Admission Test</th><th>Count</th><th>%</th></tr></thead><tbody>';
+  const order = vals.map((v,i)=>({v,i,n:tot[i]})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
+  order.forEach(({v,n})=>{
+    const pct=grand>0?(n/grand*100).toFixed(1):'0.0';
+    h+=`<tr><td style="text-align:left">${v}</td><td>${fmt(n)}</td><td>${pct}%</td></tr>`;
+  });
+  h+=`<tr style="font-weight:700"><td style="text-align:left">Total</td><td>${fmt(grand)}</td><td>100%</td></tr>`;
+  h+='</tbody></table>';
+  document.getElementById('atTableWrap').innerHTML=h;
+}
+
+// ---- Classwise Registration -------------------------------------------
+function classData(){
+  const nc = MODEL.classes.length;
+  const mk = ()=>[Array(nc).fill(0),Array(nc).fill(0),Array(nc).fill(0)];   // [year][classIdx]
+  const P = [mk(), mk(), mk()];   // P[metric][year][classIdx]  metric 0=dayTotal 1=tillDate 2=grand
+  for(const [y,r,c,k,t,dt,td,gr] of MODEL.classRows){
+    if(match(r,c)&&mt(t)){ P[0][y][k]+=dt; P[1][y][k]+=td; P[2][y][k]+=gr; }
+  }
+  return P;
+}
+function renderClass(){
+  const P = classData();
+  const bc = MODEL.blankClass;
+  document.getElementById('classHint').innerHTML =
+    'Chart = <b>Till-date</b> (cumulative to Day '+MODEL.curDay+'). Table shows Till-date / Grand&nbsp;Total per class. '+
+    'Rows with no class &rarr; "(No Class)"  ·  blank/unmatched: 2024='+fmt(bc[0])+', 2025='+fmt(bc[1])+', 2026='+fmt(bc[2]);
+  // chart: grouped bars, classes x 3 years, Till-date measure
+  groupedBars(document.getElementById('classChart'), MODEL.classes, [P[1][0],P[1][1],P[1][2]], 1120, 400);
+  // table (grid lines): Till-date + Grand per year (2026 has no grand total)
+  let h='<table class="grid"><thead>'+
+    '<tr><th rowspan="2">Class</th><th colspan="2">2024</th><th colspan="2">2025</th><th colspan="1">2026</th></tr>'+
+    '<tr><th>Till-date</th><th>Grand</th><th>Till-date</th><th>Grand</th><th>Till-date</th></tr>'+
+    '</thead><tbody>';
+  MODEL.classes.forEach((cl,k)=>{
+    h+=`<tr><td>${cl}</td>`+
+       `<td>${fmt(P[1][0][k])}</td><td>${fmt(P[2][0][k])}</td>`+
+       `<td>${fmt(P[1][1][k])}</td><td>${fmt(P[2][1][k])}</td>`+
+       `<td>${fmt(P[1][2][k])}</td></tr>`;
+  });
+  const cs=(m,y)=>{let s=0;for(let k=0;k<MODEL.classes.length;k++)s+=P[m][y][k];return s;};
+  h+=`<tr><th>Total</th>`+
+     `<th>${fmt(cs(1,0))}</th><th>${fmt(cs(2,0))}</th>`+
+     `<th>${fmt(cs(1,1))}</th><th>${fmt(cs(2,1))}</th>`+
+     `<th>${fmt(cs(1,2))}</th></tr></tbody></table>`;
+  document.getElementById('classTableWrap').innerHTML=h;
+}
+
+// ---- Unique (by Mobile) tab -------------------------------------------
+function uniScopeVal(y){
+  if(testType!==-1){   // sum per (center, test-type) distinct over matching scope
+    let sum=0;
+    for(const [yy,r,c,t,n] of MODEL.uniCenterTT){
+      if(yy!==y || t!==testType) continue;
+      if(region!==-1 && r!==region) continue;
+      if(center!==-1 && c!==center) continue;
+      if(rbh!==-1 && MODEL.rbhOfCenter[c]!==rbh) continue;
+      sum+=n;
+    }
+    return sum;
+  }
+  if(rbh!==-1){   // sum per-center distinct over centers matching the RBH (+ region/center filter)
+    let sum=0;
+    for(const row of MODEL.uniCenter){
+      if(row[0]===y && MODEL.rbhOfCenter[row[2]]===rbh
+         && (region===-1||row[1]===region) && (center===-1||row[2]===center)) sum+=row[3];
+    }
+    return sum;
+  }
+  if(center!==-1){ for(const row of MODEL.uniCenter){ if(row[0]===y&&row[1]===region&&row[2]===center) return row[3]; } return 0; }
+  if(region!==-1){ for(const row of MODEL.uniRegion){ if(row[0]===y&&row[1]===region) return row[2]; } return 0; }
+  return MODEL.uniYear[y];
+}
+function renderUnique(){
+  const u=[uniScopeVal(0),uniScopeVal(1),uniScopeVal(2)];
+  const names=MODEL.years;
+  const scope=(region===-1?'All Regions':MODEL.regions[region])+(rbh===-1?'':' · RBH: '+MODEL.rbhs[rbh])+(testType===-1?'':' · Test: '+MODEL.testTypes[testType])+(center===-1?'':' › '+MODEL.centers[center]);
+  document.getElementById('uniHint').innerHTML='Unique students by mobile number · <b>Scope: '+scope+'</b> · '+
+    '2024/2025 = distinct phones with Reg Count ≥ 1 · 2026 = distinct phones';
+  document.getElementById('uniKpis').innerHTML = names.map((n,i)=>{
+    let delta;
+    if(i===2){
+      const p25=u[1]>0?(u[2]-u[1])/u[1]*100:null, p24=u[0]>0?(u[2]-u[0])/u[0]*100:null;
+      delta=[p25!==null?`${p25>=0?'▲':'▼'} ${Math.abs(p25).toFixed(1)}% vs 2025`:null,
+             p24!==null?`${p24>=0?'▲':'▼'} ${Math.abs(p24).toFixed(1)}% vs 2024`:null].filter(Boolean).join(' · ')||'—';
+    } else { delta='unique mobiles'; }
+    return `<div class="kpi k${n}"><div class="yr">${n} · unique mobiles</div>`+
+           `<div class="val">${fmt(u[i])}</div><div class="delta">${delta}</div></div>`;
+  }).join('');
+  // region breakdown (all regions; ignores center filter)
+  const regN=MODEL.regions.length;
+  const per=[Array(regN).fill(0),Array(regN).fill(0),Array(regN).fill(0)];
+  for(const row of MODEL.uniRegion){ per[row[0]][row[1]]=row[2]; }
+  groupedBars(document.getElementById('uniChart'), MODEL.regions, per, 720, 340);
+  let h='<tr><th>Region</th><th>2024</th><th>2025</th><th>2026</th></tr>';
+  MODEL.regions.forEach((rg,r)=>{ h+=`<tr><td>${rg}</td><td>${fmt(per[0][r])}</td><td>${fmt(per[1][r])}</td><td>${fmt(per[2][r])}</td></tr>`; });
+  h+=`<tr><th>Total (distinct)</th><th>${fmt(MODEL.uniYear[0])}</th><th>${fmt(MODEL.uniYear[1])}</th><th>${fmt(MODEL.uniYear[2])}</th></tr>`;
+  document.getElementById('uniTable').innerHTML=h;
+}
+try { render(); } catch(err){ showErr((err&&err.message?err.message:err)+'\n'+(err&&err.stack?err.stack:'')); }
+setTimeout(function(){ blinkDay=false; try{ render(); }catch(e){} }, 20000);
+</script>
+<script>
+var SERVER="https://spoof-wow-genetics.ngrok-free.dev",COOLDOWN_MS=30*60*1000,LS_KEY="viq_last_refresh";
+var pollTimer=null,cooldownTimer=null,safetyTimer=null;
+
+function fmtTime(ts){if(!ts)return"";return new Date(ts).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true});}
+function getLastRefresh(){return parseInt(localStorage.getItem(LS_KEY)||"0");}
+function saveLastRefresh(ts){localStorage.setItem(LS_KEY,String(ts));}
+
+function applyBtnState(){
+  var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+  if(!btn)return;
+  var last=getLastRefresh(),remaining=last?Math.max(0,COOLDOWN_MS-(Date.now()-last)):0;
+  if(remaining>0){
+    var activeAt=fmtTime(last+COOLDOWN_MS);
+    btn.disabled=true;
+    btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#5a6b8c;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:not-allowed;opacity:1;box-shadow:none;";
+    lbl.textContent="Next refresh at "+activeAt;
+    btn.title="Already generated at "+fmtTime(last)+"  |  Active again at "+activeAt;
+    if(cooldownTimer)clearTimeout(cooldownTimer);
+    cooldownTimer=setTimeout(applyBtnState,remaining+200);
+  }else{
+    btn.disabled=false;
+    btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#38d39f;color:#0f1420;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;opacity:1;box-shadow:0 2px 8px rgba(56,211,159,.35);";
+    lbl.textContent="Refresh Data";
+    btn.title=last?"Last run: "+fmtTime(last):"";
+  }
+}
+
+function setRunningState(){
+  var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+  if(!btn)return;
+  btn.disabled=true;
+  btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#f4a259;color:#0f1420;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:not-allowed;opacity:1;box-shadow:none;";
+  lbl.textContent="Running…";btn.title="";
+  // safety fallback: if still running after 20 mins, re-enable button
+  if(safetyTimer)clearTimeout(safetyTimer);
+  safetyTimer=setTimeout(function(){applyBtnState();},20*60*1000);
+}
+
+function updatePanel(data){
+  var panel=document.getElementById("pipelinePanel"),dot=document.getElementById("pipelineStatusDot"),
+      txt=document.getElementById("pipelineStatusText"),logEl=document.getElementById("pipelineLog"),
+      lastEl=document.getElementById("pipelineLastRun");
+  if(!panel)return;
+  panel.style.display="block";
+  if(data.running){
+    dot.style.background="#f4a259";txt.textContent="Running pipeline…";
+    setRunningState();
+  }else if(data.last_status==="success"){
+    dot.style.background="#38d39f";txt.textContent="Completed successfully ✅";
+    if(safetyTimer){clearTimeout(safetyTimer);safetyTimer=null;}
+    saveLastRefresh(Date.now());
+    applyBtnState();
+  }else if(data.last_status==="error"){
+    dot.style.background="#e05555";txt.textContent="Pipeline failed — check log below ❌";
+    if(safetyTimer){clearTimeout(safetyTimer);safetyTimer=null;}
+    var btn=document.getElementById("refreshBtn"),lbl=document.getElementById("refreshLabel");
+    btn.disabled=false;
+    btn.style.cssText="display:inline-flex;align-items:center;gap:8px;background:#e05555;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;opacity:1;box-shadow:none;";
+    lbl.textContent="Retry";btn.title="";
+  }else{
+    dot.style.background="#94a1bd";txt.textContent="Ready";
+    applyBtnState();
+  }
+  if(data.last_run)lastEl.textContent="Last run: "+data.last_run;
+  if(data.log&&data.log.length){logEl.textContent=data.log.join("\n");logEl.scrollTop=logEl.scrollHeight;}
+}
+
+function pollStatus(){
+  fetch(SERVER+"/status")
+    .then(function(r){return r.json();})
+    .then(function(data){
+      updatePanel(data);
+      if(data.running){pollTimer=setTimeout(pollStatus,2000);}
+      else{clearTimeout(pollTimer);pollTimer=null;}
+    })
+    .catch(function(){
+      // retry polling in 5 sec if network blip
+      pollTimer=setTimeout(pollStatus,5000);
+    });
+}
+
+function runPipeline(){
+  if(document.getElementById("refreshBtn").disabled)return;
+  setRunningState();
+  document.getElementById("pipelinePanel").style.display="block";
+  document.getElementById("pipelineLog").textContent="⏳ Connecting to pipeline server…";
+  fetch(SERVER+"/run",{method:"POST"})
+    .then(function(r){if(r.status===409){alert("Pipeline already running. Please wait.");applyBtnState();return null;}return r.json();})
+    .then(function(data){
+      if(!data)return;
+      document.getElementById("pipelineLog").textContent="";
+      if(pollTimer)clearTimeout(pollTimer);
+      pollTimer=setTimeout(pollStatus,1500);
+    })
+    .catch(function(){
+      applyBtnState();
+      document.getElementById("pipelineLog").textContent="❌ Cannot connect to pipeline server.\nMake sure Start_Pipeline_Server.bat and Start_Ngrok.bat are running on your computer.";
+    });
+}
+
+// on page load — hide refresh button on RBH/Patna/non-management pages
+if(typeof MODEL!=="undefined" && (MODEL.rbhName||MODEL.patnaPage)){
+  var _rb=document.getElementById("refreshBtn");
+  if(_rb)_rb.parentElement.style.display="none";
+  var _pp=document.getElementById("pipelinePanel");
+  if(_pp)_pp.style.display="none";
+}
+
+// on page load — restore correct button state immediately
+applyBtnState();
+
+// sync with server
+setTimeout(function(){
+  fetch(SERVER+"/status")
+    .then(function(r){return r.json();})
+    .then(function(data){
+      updatePanel(data);
+      if(data.running){if(pollTimer)clearTimeout(pollTimer);pollTimer=setTimeout(pollStatus,2000);}
+    })
+    .catch(function(){
+      document.getElementById("refreshBtn").title="Server offline — run Start_Pipeline_Server.bat on your computer first";
+    });
+},800);
+</script>
+</body>
+</html>
